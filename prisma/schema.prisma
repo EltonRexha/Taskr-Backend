@@ -15,17 +15,214 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  clerkId       String         @id @map("clerk_id")
+  email         String         @map("email")
+  firstName     String         @map("first_name")
+  lastName      String         @map("last_name")
+  role          UserRole       @default(USER)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  notifications Notification[]
+  spaceMembers  SpaceMember[]
+  spaces        Space[]
+  tasks         Task[]
+
+  @@map("users")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean? @default(false)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+model Notification {
+  id           String           @id @default(uuid())
+  user         User             @relation(fields: [usersClerkId], references: [clerkId])
+  usersClerkId String
+  type         NotificationType @map("notification_type")
+  description  String
+  MetaData     Json             @map("meta_data")
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  @@map("notifications")
+}
+
+model Backlog {
+  id          String       @id @default(uuid())
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  scrumSpaces ScrumSpace[]
+  scrumTasks  ScrumTask[]
+  scrumEpics  ScrumEpic[]
+
+  @@map("backlogs")
+}
+
+model Epic {
+  id          String        @id @default(uuid())
+  description String
+  color       EpicColor     @map("epic_color")
+  startDate   DateTime      @map("start_date")
+  dueDate     DateTime      @map("due_date")
+  createdAt   DateTime      @map("created_at")
+  updatedAt   DateTime      @map("updated_at")
+  assignedTo  SpaceMember[]
+  scrumEpics  ScrumEpic[]
+
+  @@map("epics")
+}
+
+model ScrumSpace {
+  id           String        @id @default(uuid())
+  backlog      Backlog       @relation(fields: [backlogId], references: [id])
+  backlogId    String        @map("backlog_id")
+  createdAt    DateTime      @map("created_at")
+  updatedAt    DateTime      @map("updated_at")
+  draftSprints DraftSprint[]
+  sprints      Sprint[]
+  spaces       Space[]
+
+  @@map("scrum_spaces")
+}
+
+model Sprint {
+  id           String       @id @default(uuid())
+  title        String
+  startDate    DateTime     @map("start_date")
+  dueDate      DateTime     @map("due_date")
+  description  String
+  sprintStatus SprintStatus @default(DUE)
+  createdAt    DateTime     @map("created_at")
+  updatedAt    DateTime     @map("updated_at")
+  scrumSpace   ScrumSpace   @relation(fields: [scrumSpaceId], references: [id])
+  scrumEpics   ScrumEpic[]
+  scrumSpaceId String       @map("scrum_space_id")
+  scrumTasks   ScrumTask[]
+
+  @@map("sprints")
+}
+
+model DraftSprint {
+  id           String      @id @default(uuid())
+  title        String
+  scrumSpace   ScrumSpace  @relation(fields: [scrumSpaceId], references: [id])
+  scrumSpaceId String      @map("scrum_space_id")
+  createdAt    DateTime    @map("created_at")
+  updatedAt    DateTime    @map("updated_at")
+  scrumTasks   ScrumTask[]
+  scrumEpics   ScrumEpic[]
+}
+
+model ScrumEpic {
+  id            String       @id @default(uuid())
+  epic          Epic         @relation(fields: [epicId], references: [id])
+  epicId        String       @map("epic_id")
+  sprint        Sprint?      @relation(fields: [sprintId], references: [id])
+  sprintId      String?      @map("sprint_id")
+  draftSprint   DraftSprint? @relation(fields: [draftSprintId], references: [id])
+  draftSprintId String?
+  backlog       Backlog?     @relation(fields: [backlogId], references: [id])
+  backlogId     String?
+  createdAt     DateTime     @map("created_at")
+  updatedAt     DateTime     @map("updated_at")
+  scrumTasks    ScrumTask[]
+
+  @@map("scrum_epics")
+}
+
+model Space {
+  id           String        @id @default(uuid())
+  scrumSpace   ScrumSpace    @relation(fields: [scrumSpaceId], references: [id])
+  scrumSpaceId String        @map("scrum_space_id")
+  spaceType    SpaceType     @map("space_type")
+  author       User          @relation(fields: [userClerkId], references: [clerkId])
+  userClerkId  String        @map("user_clerk_id")
+  starred      Boolean       @default(false)
+  createdAt    DateTime      @map("created_at")
+  updatedAt    DateTime      @map("updated_at")
+  spaceMembers SpaceMember[]
+
+  @@map("space")
+}
+
+model SpaceMember {
+  id          String          @id @default(uuid())
+  user        User            @relation(fields: [userClerkId], references: [clerkId])
+  userClerkId String          @map("user_clerk_id")
+  role        SpaceMemberRole
+  space       Space           @relation(fields: [spaceId], references: [id])
+  spaceId     String          @map("space_id")
+  createdAt   DateTime        @map("created_at")
+  updatedAt   DateTime        @map("updated_at")
+
+  AssignedTasks Task[]
+  AssignedEpics Epic[]
+
+  @@map("space_members")
+}
+
+model Task {
+  id          String        @id @default(uuid())
+  author      User          @relation(fields: [userClerkId], references: [clerkId])
+  userClerkId String        @map("user_clerk_id")
+  startDate   DateTime      @map("start_date")
+  dueDate     DateTime      @map("due_date")
+  createdAt   DateTime      @map("created_at")
+  updatedAt   DateTime      @map("updated_at")
+  scrumTasks  ScrumTask[]
+  AssignedTo  SpaceMember[]
+
+  @@map("tasks")
+}
+
+model ScrumTask {
+  id            String          @id @default(uuid())
+  task          Task            @relation(fields: [taskId], references: [id])
+  taskId        String          @map("task_id")
+  scrumEpic     ScrumEpic       @relation(fields: [scrumEpicId], references: [id])
+  scrumEpicId   String          @map("epic_id")
+  draftSprint   DraftSprint?    @relation(fields: [draftSprintId], references: [id])
+  draftSprintId String?         @map("draft_sprint_id")
+  sprint        Sprint?         @relation(fields: [sprintId], references: [id])
+  sprintId      String?         @map("sprint_id")
+  backlog       Backlog?        @relation(fields: [backlogId], references: [id])
+  backlogId     String?
+  status        ScrumTaskStatus
+  createdAt     DateTime        @map("created_at")
+  updatedAt     DateTime        @map("updated_at")
+
+  @@map("scrum_task")
+}
+
+enum ScrumTaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum SpaceType {
+  SCRUM
+  KANBAN
+}
+
+enum SpaceMemberRole {
+  ADMIN
+  USER
+}
+
+enum SprintStatus {
+  COMPLETED
+  DUE
+}
+
+enum EpicColor {
+  RED
+  GREEN
+  ORANGE
+  YELLOW
+}
+
+enum NotificationType {
+  Invitation
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }
