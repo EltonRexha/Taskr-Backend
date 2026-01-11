@@ -19,6 +19,7 @@ model User {
   email         String         @map("email")
   firstName     String         @map("first_name")
   lastName      String         @map("last_name")
+  profileImage  String         @map("profile_img_url")
   role          UserRole       @default(USER)
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
