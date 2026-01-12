@@ -9,7 +9,59 @@
 * 🟢 You can import this file directly.
 */
 
+export const ScrumTaskStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE'
+} as const
+
+export type ScrumTaskStatus = (typeof ScrumTaskStatus)[keyof typeof ScrumTaskStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const SpaceType = {
+  SCRUM: 'SCRUM',
+  KANBAN: 'KANBAN'
+} as const
+
+export type SpaceType = (typeof SpaceType)[keyof typeof SpaceType]
+
+
+export const SpaceMemberRole = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+} as const
+
+export type SpaceMemberRole = (typeof SpaceMemberRole)[keyof typeof SpaceMemberRole]
+
+
+export const SprintStatus = {
+  COMPLETED: 'COMPLETED',
+  DUE: 'DUE'
+} as const
+
+export type SprintStatus = (typeof SprintStatus)[keyof typeof SprintStatus]
+
+
+export const EpicColor = {
+  RED: 'RED',
+  GREEN: 'GREEN',
+  ORANGE: 'ORANGE',
+  YELLOW: 'YELLOW'
+} as const
+
+export type EpicColor = (typeof EpicColor)[keyof typeof EpicColor]
+
+
+export const NotificationType = {
+  Invitation: 'Invitation'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]

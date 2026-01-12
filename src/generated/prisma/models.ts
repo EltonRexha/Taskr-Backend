@@ -9,5 +9,15 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.js'
-export type * from './models/Post.js'
+export type * from './models/Notification.js'
+export type * from './models/Backlog.js'
+export type * from './models/Epic.js'
+export type * from './models/ScrumSpace.js'
+export type * from './models/Sprint.js'
+export type * from './models/DraftSprint.js'
+export type * from './models/ScrumEpic.js'
+export type * from './models/Space.js'
+export type * from './models/SpaceMember.js'
+export type * from './models/Task.js'
+export type * from './models/ScrumTask.js'
 export type * from './commonInputTypes.js'

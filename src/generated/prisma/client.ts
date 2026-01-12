@@ -43,7 +43,57 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model Post
+ * Model Notification
  * 
  */
-export type Post = Prisma.PostModel
+export type Notification = Prisma.NotificationModel
+/**
+ * Model Backlog
+ * 
+ */
+export type Backlog = Prisma.BacklogModel
+/**
+ * Model Epic
+ * 
+ */
+export type Epic = Prisma.EpicModel
+/**
+ * Model ScrumSpace
+ * 
+ */
+export type ScrumSpace = Prisma.ScrumSpaceModel
+/**
+ * Model Sprint
+ * 
+ */
+export type Sprint = Prisma.SprintModel
+/**
+ * Model DraftSprint
+ * 
+ */
+export type DraftSprint = Prisma.DraftSprintModel
+/**
+ * Model ScrumEpic
+ * 
+ */
+export type ScrumEpic = Prisma.ScrumEpicModel
+/**
+ * Model Space
+ * 
+ */
+export type Space = Prisma.SpaceModel
+/**
+ * Model SpaceMember
+ * 
+ */
+export type SpaceMember = Prisma.SpaceMemberModel
+/**
+ * Model Task
+ * 
+ */
+export type Task = Prisma.TaskModel
+/**
+ * Model ScrumTask
+ * 
+ */
+export type ScrumTask = Prisma.ScrumTaskModel
