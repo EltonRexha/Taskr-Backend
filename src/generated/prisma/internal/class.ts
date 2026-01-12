@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.2.0",
   "engineVersion": "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3",
   "activeProvider": "postgresql",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider     = \"prisma-client\"\n  output       = \"../src/generated/prisma\"\n  moduleFormat = \"cjs\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id    Int     @id @default(autoincrement())\n  email String  @unique\n  name  String?\n  posts Post[]\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  title     String\n  content   String?\n  published Boolean? @default(false)\n  author    User?    @relation(fields: [authorId], references: [id])\n  authorId  Int?\n}\n",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider     = \"prisma-client\"\n  output       = \"../src/generated/prisma\"\n  moduleFormat = \"cjs\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  clerkId       String         @id @map(\"clerk_id\")\n  email         String         @map(\"email\")\n  firstName     String         @map(\"first_name\")\n  lastName      String?        @map(\"last_name\")\n  profileImage  String         @map(\"profile_img_url\")\n  role          UserRole       @default(USER)\n  createdAt     DateTime       @default(now()) @map(\"created_at\")\n  updatedAt     DateTime       @updatedAt @map(\"updated_at\")\n  notifications Notification[]\n  spaceMembers  SpaceMember[]\n  spaces        Space[]\n  tasks         Task[]\n\n  @@map(\"users\")\n}\n\nmodel Notification {\n  id           String           @id @default(uuid())\n  user         User             @relation(fields: [usersClerkId], references: [clerkId])\n  usersClerkId String\n  type         NotificationType @map(\"notification_type\")\n  description  String\n  MetaData     Json             @map(\"meta_data\")\n  createdAt    DateTime         @default(now()) @map(\"created_at\")\n  updatedAt    DateTime         @updatedAt @map(\"updated_at\")\n\n  @@map(\"notifications\")\n}\n\nmodel Backlog {\n  id          String       @id @default(uuid())\n  createdAt   DateTime     @default(now()) @map(\"created_at\")\n  updatedAt   DateTime     @updatedAt @map(\"updated_at\")\n  scrumSpaces ScrumSpace[]\n  scrumTasks  ScrumTask[]\n  scrumEpics  ScrumEpic[]\n\n  @@map(\"backlogs\")\n}\n\nmodel Epic {\n  id          String        @id @default(uuid())\n  description String\n  color       EpicColor     @map(\"epic_color\")\n  startDate   DateTime      @map(\"start_date\")\n  dueDate     DateTime      @map(\"due_date\")\n  createdAt   DateTime      @map(\"created_at\")\n  updatedAt   DateTime      @map(\"updated_at\")\n  assignedTo  SpaceMember[]\n  scrumEpics  ScrumEpic[]\n\n  @@map(\"epics\")\n}\n\nmodel ScrumSpace {\n  id           String        @id @default(uuid())\n  backlog      Backlog       @relation(fields: [backlogId], references: [id])\n  backlogId    String        @map(\"backlog_id\")\n  createdAt    DateTime      @map(\"created_at\")\n  updatedAt    DateTime      @map(\"updated_at\")\n  draftSprints DraftSprint[]\n  sprints      Sprint[]\n  spaces       Space[]\n\n  @@map(\"scrum_spaces\")\n}\n\nmodel Sprint {\n  id           String       @id @default(uuid())\n  title        String\n  startDate    DateTime     @map(\"start_date\")\n  dueDate      DateTime     @map(\"due_date\")\n  description  String\n  sprintStatus SprintStatus @default(DUE)\n  createdAt    DateTime     @map(\"created_at\")\n  updatedAt    DateTime     @map(\"updated_at\")\n  scrumSpace   ScrumSpace   @relation(fields: [scrumSpaceId], references: [id])\n  scrumEpics   ScrumEpic[]\n  scrumSpaceId String       @map(\"scrum_space_id\")\n  scrumTasks   ScrumTask[]\n\n  @@map(\"sprints\")\n}\n\nmodel DraftSprint {\n  id           String      @id @default(uuid())\n  title        String\n  scrumSpace   ScrumSpace  @relation(fields: [scrumSpaceId], references: [id])\n  scrumSpaceId String      @map(\"scrum_space_id\")\n  createdAt    DateTime    @map(\"created_at\")\n  updatedAt    DateTime    @map(\"updated_at\")\n  scrumTasks   ScrumTask[]\n  scrumEpics   ScrumEpic[]\n}\n\nmodel ScrumEpic {\n  id            String       @id @default(uuid())\n  epic          Epic         @relation(fields: [epicId], references: [id])\n  epicId        String       @map(\"epic_id\")\n  sprint        Sprint?      @relation(fields: [sprintId], references: [id])\n  sprintId      String?      @map(\"sprint_id\")\n  draftSprint   DraftSprint? @relation(fields: [draftSprintId], references: [id])\n  draftSprintId String?\n  backlog       Backlog?     @relation(fields: [backlogId], references: [id])\n  backlogId     String?\n  createdAt     DateTime     @map(\"created_at\")\n  updatedAt     DateTime     @map(\"updated_at\")\n  scrumTasks    ScrumTask[]\n\n  @@map(\"scrum_epics\")\n}\n\nmodel Space {\n  id           String        @id @default(uuid())\n  scrumSpace   ScrumSpace    @relation(fields: [scrumSpaceId], references: [id])\n  scrumSpaceId String        @map(\"scrum_space_id\")\n  spaceType    SpaceType     @map(\"space_type\")\n  author       User          @relation(fields: [userClerkId], references: [clerkId])\n  userClerkId  String        @map(\"user_clerk_id\")\n  starred      Boolean       @default(false)\n  createdAt    DateTime      @map(\"created_at\")\n  updatedAt    DateTime      @map(\"updated_at\")\n  spaceMembers SpaceMember[]\n\n  @@map(\"space\")\n}\n\nmodel SpaceMember {\n  id          String          @id @default(uuid())\n  user        User            @relation(fields: [userClerkId], references: [clerkId])\n  userClerkId String          @map(\"user_clerk_id\")\n  role        SpaceMemberRole\n  space       Space           @relation(fields: [spaceId], references: [id])\n  spaceId     String          @map(\"space_id\")\n  createdAt   DateTime        @map(\"created_at\")\n  updatedAt   DateTime        @map(\"updated_at\")\n\n  AssignedTasks Task[]\n  AssignedEpics Epic[]\n\n  @@map(\"space_members\")\n}\n\nmodel Task {\n  id          String        @id @default(uuid())\n  author      User          @relation(fields: [userClerkId], references: [clerkId])\n  userClerkId String        @map(\"user_clerk_id\")\n  startDate   DateTime      @map(\"start_date\")\n  dueDate     DateTime      @map(\"due_date\")\n  createdAt   DateTime      @map(\"created_at\")\n  updatedAt   DateTime      @map(\"updated_at\")\n  scrumTasks  ScrumTask[]\n  AssignedTo  SpaceMember[]\n\n  @@map(\"tasks\")\n}\n\nmodel ScrumTask {\n  id            String          @id @default(uuid())\n  task          Task            @relation(fields: [taskId], references: [id])\n  taskId        String          @map(\"task_id\")\n  scrumEpic     ScrumEpic       @relation(fields: [scrumEpicId], references: [id])\n  scrumEpicId   String          @map(\"epic_id\")\n  draftSprint   DraftSprint?    @relation(fields: [draftSprintId], references: [id])\n  draftSprintId String?         @map(\"draft_sprint_id\")\n  sprint        Sprint?         @relation(fields: [sprintId], references: [id])\n  sprintId      String?         @map(\"sprint_id\")\n  backlog       Backlog?        @relation(fields: [backlogId], references: [id])\n  backlogId     String?\n  status        ScrumTaskStatus\n  createdAt     DateTime        @map(\"created_at\")\n  updatedAt     DateTime        @map(\"updated_at\")\n\n  @@map(\"scrum_task\")\n}\n\nenum ScrumTaskStatus {\n  TODO\n  IN_PROGRESS\n  DONE\n}\n\nenum SpaceType {\n  SCRUM\n  KANBAN\n}\n\nenum SpaceMemberRole {\n  ADMIN\n  USER\n}\n\nenum SprintStatus {\n  COMPLETED\n  DUE\n}\n\nenum EpicColor {\n  RED\n  GREEN\n  ORANGE\n  YELLOW\n}\n\nenum NotificationType {\n  Invitation\n}\n\nenum UserRole {\n  ADMIN\n  USER\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"posts\",\"kind\":\"object\",\"type\":\"Post\",\"relationName\":\"PostToUser\"}],\"dbName\":null},\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"published\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PostToUser\"},{\"name\":\"authorId\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"clerkId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"clerk_id\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"email\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"first_name\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"last_name\"},{\"name\":\"profileImage\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"profile_img_url\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"notifications\",\"kind\":\"object\",\"type\":\"Notification\",\"relationName\":\"NotificationToUser\"},{\"name\":\"spaceMembers\",\"kind\":\"object\",\"type\":\"SpaceMember\",\"relationName\":\"SpaceMemberToUser\"},{\"name\":\"spaces\",\"kind\":\"object\",\"type\":\"Space\",\"relationName\":\"SpaceToUser\"},{\"name\":\"tasks\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"TaskToUser\"}],\"dbName\":\"users\"},\"Notification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"NotificationToUser\"},{\"name\":\"usersClerkId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"NotificationType\",\"dbName\":\"notification_type\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"MetaData\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"meta_data\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"notifications\"},\"Backlog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"scrumSpaces\",\"kind\":\"object\",\"type\":\"ScrumSpace\",\"relationName\":\"BacklogToScrumSpace\"},{\"name\":\"scrumTasks\",\"kind\":\"object\",\"type\":\"ScrumTask\",\"relationName\":\"BacklogToScrumTask\"},{\"name\":\"scrumEpics\",\"kind\":\"object\",\"type\":\"ScrumEpic\",\"relationName\":\"BacklogToScrumEpic\"}],\"dbName\":\"backlogs\"},\"Epic\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"enum\",\"type\":\"EpicColor\",\"dbName\":\"epic_color\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"start_date\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"due_date\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"assignedTo\",\"kind\":\"object\",\"type\":\"SpaceMember\",\"relationName\":\"EpicToSpaceMember\"},{\"name\":\"scrumEpics\",\"kind\":\"object\",\"type\":\"ScrumEpic\",\"relationName\":\"EpicToScrumEpic\"}],\"dbName\":\"epics\"},\"ScrumSpace\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"backlog\",\"kind\":\"object\",\"type\":\"Backlog\",\"relationName\":\"BacklogToScrumSpace\"},{\"name\":\"backlogId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"backlog_id\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"draftSprints\",\"kind\":\"object\",\"type\":\"DraftSprint\",\"relationName\":\"DraftSprintToScrumSpace\"},{\"name\":\"sprints\",\"kind\":\"object\",\"type\":\"Sprint\",\"relationName\":\"ScrumSpaceToSprint\"},{\"name\":\"spaces\",\"kind\":\"object\",\"type\":\"Space\",\"relationName\":\"ScrumSpaceToSpace\"}],\"dbName\":\"scrum_spaces\"},\"Sprint\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"start_date\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"due_date\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sprintStatus\",\"kind\":\"enum\",\"type\":\"SprintStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"scrumSpace\",\"kind\":\"object\",\"type\":\"ScrumSpace\",\"relationName\":\"ScrumSpaceToSprint\"},{\"name\":\"scrumEpics\",\"kind\":\"object\",\"type\":\"ScrumEpic\",\"relationName\":\"ScrumEpicToSprint\"},{\"name\":\"scrumSpaceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"scrum_space_id\"},{\"name\":\"scrumTasks\",\"kind\":\"object\",\"type\":\"ScrumTask\",\"relationName\":\"ScrumTaskToSprint\"}],\"dbName\":\"sprints\"},\"DraftSprint\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"scrumSpace\",\"kind\":\"object\",\"type\":\"ScrumSpace\",\"relationName\":\"DraftSprintToScrumSpace\"},{\"name\":\"scrumSpaceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"scrum_space_id\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"scrumTasks\",\"kind\":\"object\",\"type\":\"ScrumTask\",\"relationName\":\"DraftSprintToScrumTask\"},{\"name\":\"scrumEpics\",\"kind\":\"object\",\"type\":\"ScrumEpic\",\"relationName\":\"DraftSprintToScrumEpic\"}],\"dbName\":null},\"ScrumEpic\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"epic\",\"kind\":\"object\",\"type\":\"Epic\",\"relationName\":\"EpicToScrumEpic\"},{\"name\":\"epicId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"epic_id\"},{\"name\":\"sprint\",\"kind\":\"object\",\"type\":\"Sprint\",\"relationName\":\"ScrumEpicToSprint\"},{\"name\":\"sprintId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"sprint_id\"},{\"name\":\"draftSprint\",\"kind\":\"object\",\"type\":\"DraftSprint\",\"relationName\":\"DraftSprintToScrumEpic\"},{\"name\":\"draftSprintId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"backlog\",\"kind\":\"object\",\"type\":\"Backlog\",\"relationName\":\"BacklogToScrumEpic\"},{\"name\":\"backlogId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"scrumTasks\",\"kind\":\"object\",\"type\":\"ScrumTask\",\"relationName\":\"ScrumEpicToScrumTask\"}],\"dbName\":\"scrum_epics\"},\"Space\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"scrumSpace\",\"kind\":\"object\",\"type\":\"ScrumSpace\",\"relationName\":\"ScrumSpaceToSpace\"},{\"name\":\"scrumSpaceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"scrum_space_id\"},{\"name\":\"spaceType\",\"kind\":\"enum\",\"type\":\"SpaceType\",\"dbName\":\"space_type\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SpaceToUser\"},{\"name\":\"userClerkId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_clerk_id\"},{\"name\":\"starred\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"spaceMembers\",\"kind\":\"object\",\"type\":\"SpaceMember\",\"relationName\":\"SpaceToSpaceMember\"}],\"dbName\":\"space\"},\"SpaceMember\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SpaceMemberToUser\"},{\"name\":\"userClerkId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_clerk_id\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"SpaceMemberRole\"},{\"name\":\"space\",\"kind\":\"object\",\"type\":\"Space\",\"relationName\":\"SpaceToSpaceMember\"},{\"name\":\"spaceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"space_id\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"AssignedTasks\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"SpaceMemberToTask\"},{\"name\":\"AssignedEpics\",\"kind\":\"object\",\"type\":\"Epic\",\"relationName\":\"EpicToSpaceMember\"}],\"dbName\":\"space_members\"},\"Task\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TaskToUser\"},{\"name\":\"userClerkId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_clerk_id\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"start_date\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"due_date\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"scrumTasks\",\"kind\":\"object\",\"type\":\"ScrumTask\",\"relationName\":\"ScrumTaskToTask\"},{\"name\":\"AssignedTo\",\"kind\":\"object\",\"type\":\"SpaceMember\",\"relationName\":\"SpaceMemberToTask\"}],\"dbName\":\"tasks\"},\"ScrumTask\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"ScrumTaskToTask\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"task_id\"},{\"name\":\"scrumEpic\",\"kind\":\"object\",\"type\":\"ScrumEpic\",\"relationName\":\"ScrumEpicToScrumTask\"},{\"name\":\"scrumEpicId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"epic_id\"},{\"name\":\"draftSprint\",\"kind\":\"object\",\"type\":\"DraftSprint\",\"relationName\":\"DraftSprintToScrumTask\"},{\"name\":\"draftSprintId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"draft_sprint_id\"},{\"name\":\"sprint\",\"kind\":\"object\",\"type\":\"Sprint\",\"relationName\":\"ScrumTaskToSprint\"},{\"name\":\"sprintId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"sprint_id\"},{\"name\":\"backlog\",\"kind\":\"object\",\"type\":\"Backlog\",\"relationName\":\"BacklogToScrumTask\"},{\"name\":\"backlogId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ScrumTaskStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"scrum_task\"}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -185,14 +185,114 @@ export interface PrismaClient<
   get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
-   * `prisma.post`: Exposes CRUD operations for the **Post** model.
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Posts
-    * const posts = await prisma.post.findMany()
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
     * ```
     */
-  get post(): Prisma.PostDelegate<ExtArgs, { omit: OmitOpts }>;
+  get notification(): Prisma.NotificationDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.backlog`: Exposes CRUD operations for the **Backlog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Backlogs
+    * const backlogs = await prisma.backlog.findMany()
+    * ```
+    */
+  get backlog(): Prisma.BacklogDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.epic`: Exposes CRUD operations for the **Epic** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Epics
+    * const epics = await prisma.epic.findMany()
+    * ```
+    */
+  get epic(): Prisma.EpicDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.scrumSpace`: Exposes CRUD operations for the **ScrumSpace** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ScrumSpaces
+    * const scrumSpaces = await prisma.scrumSpace.findMany()
+    * ```
+    */
+  get scrumSpace(): Prisma.ScrumSpaceDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.sprint`: Exposes CRUD operations for the **Sprint** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Sprints
+    * const sprints = await prisma.sprint.findMany()
+    * ```
+    */
+  get sprint(): Prisma.SprintDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.draftSprint`: Exposes CRUD operations for the **DraftSprint** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DraftSprints
+    * const draftSprints = await prisma.draftSprint.findMany()
+    * ```
+    */
+  get draftSprint(): Prisma.DraftSprintDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.scrumEpic`: Exposes CRUD operations for the **ScrumEpic** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ScrumEpics
+    * const scrumEpics = await prisma.scrumEpic.findMany()
+    * ```
+    */
+  get scrumEpic(): Prisma.ScrumEpicDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.space`: Exposes CRUD operations for the **Space** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Spaces
+    * const spaces = await prisma.space.findMany()
+    * ```
+    */
+  get space(): Prisma.SpaceDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.spaceMember`: Exposes CRUD operations for the **SpaceMember** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SpaceMembers
+    * const spaceMembers = await prisma.spaceMember.findMany()
+    * ```
+    */
+  get spaceMember(): Prisma.SpaceMemberDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.task`: Exposes CRUD operations for the **Task** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Tasks
+    * const tasks = await prisma.task.findMany()
+    * ```
+    */
+  get task(): Prisma.TaskDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.scrumTask`: Exposes CRUD operations for the **ScrumTask** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ScrumTasks
+    * const scrumTasks = await prisma.scrumTask.findMany()
+    * ```
+    */
+  get scrumTask(): Prisma.ScrumTaskDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

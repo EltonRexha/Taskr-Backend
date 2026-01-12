@@ -52,7 +52,17 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Post: 'Post'
+  Notification: 'Notification',
+  Backlog: 'Backlog',
+  Epic: 'Epic',
+  ScrumSpace: 'ScrumSpace',
+  Sprint: 'Sprint',
+  DraftSprint: 'DraftSprint',
+  ScrumEpic: 'ScrumEpic',
+  Space: 'Space',
+  SpaceMember: 'SpaceMember',
+  Task: 'Task',
+  ScrumTask: 'ScrumTask'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -72,23 +82,153 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 
 export const UserScalarFieldEnum = {
-  id: 'id',
+  clerkId: 'clerkId',
   email: 'email',
-  name: 'name'
+  firstName: 'firstName',
+  lastName: 'lastName',
+  profileImage: 'profileImage',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const PostScalarFieldEnum = {
+export const NotificationScalarFieldEnum = {
   id: 'id',
-  title: 'title',
-  content: 'content',
-  published: 'published',
-  authorId: 'authorId'
+  usersClerkId: 'usersClerkId',
+  type: 'type',
+  description: 'description',
+  MetaData: 'MetaData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
-export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const BacklogScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BacklogScalarFieldEnum = (typeof BacklogScalarFieldEnum)[keyof typeof BacklogScalarFieldEnum]
+
+
+export const EpicScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  color: 'color',
+  startDate: 'startDate',
+  dueDate: 'dueDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EpicScalarFieldEnum = (typeof EpicScalarFieldEnum)[keyof typeof EpicScalarFieldEnum]
+
+
+export const ScrumSpaceScalarFieldEnum = {
+  id: 'id',
+  backlogId: 'backlogId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ScrumSpaceScalarFieldEnum = (typeof ScrumSpaceScalarFieldEnum)[keyof typeof ScrumSpaceScalarFieldEnum]
+
+
+export const SprintScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  startDate: 'startDate',
+  dueDate: 'dueDate',
+  description: 'description',
+  sprintStatus: 'sprintStatus',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  scrumSpaceId: 'scrumSpaceId'
+} as const
+
+export type SprintScalarFieldEnum = (typeof SprintScalarFieldEnum)[keyof typeof SprintScalarFieldEnum]
+
+
+export const DraftSprintScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  scrumSpaceId: 'scrumSpaceId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DraftSprintScalarFieldEnum = (typeof DraftSprintScalarFieldEnum)[keyof typeof DraftSprintScalarFieldEnum]
+
+
+export const ScrumEpicScalarFieldEnum = {
+  id: 'id',
+  epicId: 'epicId',
+  sprintId: 'sprintId',
+  draftSprintId: 'draftSprintId',
+  backlogId: 'backlogId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ScrumEpicScalarFieldEnum = (typeof ScrumEpicScalarFieldEnum)[keyof typeof ScrumEpicScalarFieldEnum]
+
+
+export const SpaceScalarFieldEnum = {
+  id: 'id',
+  scrumSpaceId: 'scrumSpaceId',
+  spaceType: 'spaceType',
+  userClerkId: 'userClerkId',
+  starred: 'starred',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpaceScalarFieldEnum = (typeof SpaceScalarFieldEnum)[keyof typeof SpaceScalarFieldEnum]
+
+
+export const SpaceMemberScalarFieldEnum = {
+  id: 'id',
+  userClerkId: 'userClerkId',
+  role: 'role',
+  spaceId: 'spaceId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpaceMemberScalarFieldEnum = (typeof SpaceMemberScalarFieldEnum)[keyof typeof SpaceMemberScalarFieldEnum]
+
+
+export const TaskScalarFieldEnum = {
+  id: 'id',
+  userClerkId: 'userClerkId',
+  startDate: 'startDate',
+  dueDate: 'dueDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const ScrumTaskScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  scrumEpicId: 'scrumEpicId',
+  draftSprintId: 'draftSprintId',
+  sprintId: 'sprintId',
+  backlogId: 'backlogId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ScrumTaskScalarFieldEnum = (typeof ScrumTaskScalarFieldEnum)[keyof typeof ScrumTaskScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -97,6 +237,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull'
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -113,4 +260,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull',
+  AnyNull: 'AnyNull'
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

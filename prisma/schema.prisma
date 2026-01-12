@@ -18,7 +18,7 @@ model User {
   clerkId       String         @id @map("clerk_id")
   email         String         @map("email")
   firstName     String         @map("first_name")
-  lastName      String         @map("last_name")
+  lastName      String?        @map("last_name")
   profileImage  String         @map("profile_img_url")
   role          UserRole       @default(USER)
   createdAt     DateTime       @default(now()) @map("created_at")
@@ -33,7 +33,7 @@ model User {
 
 model Notification {
   id           String           @id @default(uuid())
-  user         User             @relation(fields: [usersClerkId], references: [clerkId])
+  user         User             @relation(fields: [usersClerkId], references: [clerkId], onDelete: Cascade)
   usersClerkId String
   type         NotificationType @map("notification_type")
   description  String
@@ -132,8 +132,8 @@ model Space {
   scrumSpace   ScrumSpace    @relation(fields: [scrumSpaceId], references: [id])
   scrumSpaceId String        @map("scrum_space_id")
   spaceType    SpaceType     @map("space_type")
-  author       User          @relation(fields: [userClerkId], references: [clerkId])
-  userClerkId  String        @map("user_clerk_id")
+  author       User?         @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
+  userClerkId  String?       @map("user_clerk_id")
   starred      Boolean       @default(false)
   createdAt    DateTime      @map("created_at")
   updatedAt    DateTime      @map("updated_at")
@@ -144,7 +144,7 @@ model Space {
 
 model SpaceMember {
   id          String          @id @default(uuid())
-  user        User            @relation(fields: [userClerkId], references: [clerkId])
+  user        User            @relation(fields: [userClerkId], references: [clerkId], onDelete: Cascade)
   userClerkId String          @map("user_clerk_id")
   role        SpaceMemberRole
   space       Space           @relation(fields: [spaceId], references: [id])
@@ -160,8 +160,8 @@ model SpaceMember {
 
 model Task {
   id          String        @id @default(uuid())
-  author      User          @relation(fields: [userClerkId], references: [clerkId])
-  userClerkId String        @map("user_clerk_id")
+  author      User?         @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
+  userClerkId String?       @map("user_clerk_id")
   startDate   DateTime      @map("start_date")
   dueDate     DateTime      @map("due_date")
   createdAt   DateTime      @map("created_at")
