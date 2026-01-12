@@ -16,6 +16,7 @@ export class CreateUserDto {
   @IsString()
   readonly lastName?: string;
 
+  @IsNotEmpty()
   @IsString()
   readonly profileImage: string;
 }

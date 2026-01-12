@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { createClerkClient, WebhookEvent } from '@clerk/backend'
+import { createClerkClient, EmailAddressJSON, WebhookEvent } from '@clerk/backend'
 import { DatabaseService } from 'src/database/database.service';
 import { UsersService } from 'src/users/users.service';
 
@@ -17,10 +17,25 @@ export class ClerkService {
         return this.clerkClient.users.getUser(userId);
     }
 
+    private findPrimaryEmailAddress(email_addresses: EmailAddressJSON[], primary_email_address_id: string | null) {
+        let primaryEmail = email_addresses.find(({ id }) => {
+            return id === primary_email_address_id
+        })?.email_address;
+
+        if (!primaryEmail) {
+            primaryEmail = email_addresses[0].email_address;
+            if (!primaryEmail) {
+                throw new Error('No email provided');
+            }
+        }
+
+        return primaryEmail;
+    }
+
     async handleClerkUserCreated(event: WebhookEvent) {
         if (event.type !== 'user.created') throw new Error('Must be a user.created event');
 
-        const { id, first_name, last_name, email_addresses, image_url } = event.data;
+        const { id, first_name, last_name, email_addresses, image_url, primary_email_address_id } = event.data;
 
         if (!first_name) {
             throw new Error('User not completed fully');
@@ -28,7 +43,9 @@ export class ClerkService {
 
         const lastName = last_name ?? undefined;
 
-        return await this.userService.create({ clerkId: id, email: email_addresses[0].email_address, firstName: first_name, lastName, profileImage: image_url })
+        let primaryEmail = this.findPrimaryEmailAddress(email_addresses, primary_email_address_id);
+
+        return await this.userService.create({ clerkId: id, email: primaryEmail, firstName: first_name, lastName, profileImage: image_url })
     }
 
     async handleClerkUserDeleted(event: WebhookEvent) {
@@ -46,7 +63,15 @@ export class ClerkService {
     async handleClerkUserUpdated(event: WebhookEvent) {
         if (event.type !== 'user.updated') throw new Error('Must be a user.updated event');
 
+        const { first_name, last_name, email_addresses, primary_email_address_id, image_url, id } = event.data;
+
+        if (!first_name) {
+            throw new Error('First Name must be provided');
+        }
+
+        let primaryEmail = this.findPrimaryEmailAddress(email_addresses, primary_email_address_id);
+        const lastName = last_name ?? undefined;
+
+        await this.userService.update({ clerkId: id, email: primaryEmail, firstName: first_name, lastName, profileImage: image_url });
     }
-
-
 }

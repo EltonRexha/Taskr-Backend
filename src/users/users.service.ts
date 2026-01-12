@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,8 +33,23 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number) {
-    return `This action updates a #${id} user`;
+  update(updateUserDto: UpdateUserDto) {
+    try {
+      const user = this.prisma.user.update({
+        where: {
+          clerkId: updateUserDto.clerkId
+        },
+        data: {
+          email: updateUserDto.email,
+          firstName: updateUserDto.firstName,
+          lastName: updateUserDto.lastName,
+          profileImage: updateUserDto.profileImage
+        }
+      })
+      return user;
+    } catch (error) {
+      throw new Error(`Failed to update user: ${error.message}`);
+    }
   }
 
   remove(clerkId: string) {
