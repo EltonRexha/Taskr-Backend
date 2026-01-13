@@ -15,18 +15,18 @@ datasource db {
 }
 
 model User {
-  clerkId       String         @id @map("clerk_id")
-  email         String         @map("email")
-  firstName     String         @map("first_name")
-  lastName      String?        @map("last_name")
-  profileImage  String         @map("profile_img_url")
-  role          UserRole       @default(USER)
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  notifications Notification[]
-  spaceMembers  SpaceMember[]
-  spaces        Space[]
-  tasks         Task[]
+  clerkId        String          @id @map("clerk_id")
+  email          String          @map("email")
+  firstName      String          @map("first_name")
+  lastName       String?         @map("last_name")
+  profileImage   String          @map("profile_img_url")
+  role           UserRole        @default(USER)
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  notifications  Notification[]
+  ProjectMembers ProjectMember[]
+  Projects       Project[]
+  tasks          Task[]
 
   @@map("users")
 }
@@ -45,31 +45,31 @@ model Notification {
 }
 
 model Backlog {
-  id          String       @id @default(uuid())
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  scrumSpaces ScrumSpace[]
-  scrumTasks  ScrumTask[]
-  scrumEpics  ScrumEpic[]
+  id            String         @id @default(uuid())
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  ScrumProjects ScrumProject[]
+  scrumTasks    ScrumTask[]
+  scrumEpics    ScrumEpic[]
 
   @@map("backlogs")
 }
 
 model Epic {
-  id          String        @id @default(uuid())
+  id          String          @id @default(uuid())
   description String
-  color       EpicColor     @map("epic_color")
-  startDate   DateTime      @map("start_date")
-  dueDate     DateTime      @map("due_date")
-  createdAt   DateTime      @map("created_at")
-  updatedAt   DateTime      @map("updated_at")
-  assignedTo  SpaceMember[]
+  color       EpicColor       @map("epic_color")
+  startDate   DateTime        @map("start_date")
+  dueDate     DateTime        @map("due_date")
+  createdAt   DateTime        @map("created_at")
+  updatedAt   DateTime        @map("updated_at")
+  assignedTo  ProjectMember[]
   scrumEpics  ScrumEpic[]
 
   @@map("epics")
 }
 
-model ScrumSpace {
+model ScrumProject {
   id           String        @id @default(uuid())
   backlog      Backlog       @relation(fields: [backlogId], references: [id])
   backlogId    String        @map("backlog_id")
@@ -77,37 +77,37 @@ model ScrumSpace {
   updatedAt    DateTime      @map("updated_at")
   draftSprints DraftSprint[]
   sprints      Sprint[]
-  spaces       Space[]
+  Projects     Project[]
 
-  @@map("scrum_spaces")
+  @@map("scrum_Projects")
 }
 
 model Sprint {
-  id           String       @id @default(uuid())
-  title        String
-  startDate    DateTime     @map("start_date")
-  dueDate      DateTime     @map("due_date")
-  description  String
-  sprintStatus SprintStatus @default(DUE)
-  createdAt    DateTime     @map("created_at")
-  updatedAt    DateTime     @map("updated_at")
-  scrumSpace   ScrumSpace   @relation(fields: [scrumSpaceId], references: [id])
-  scrumEpics   ScrumEpic[]
-  scrumSpaceId String       @map("scrum_space_id")
-  scrumTasks   ScrumTask[]
+  id             String       @id @default(uuid())
+  title          String
+  startDate      DateTime     @map("start_date")
+  dueDate        DateTime     @map("due_date")
+  description    String
+  sprintStatus   SprintStatus @default(DUE)
+  createdAt      DateTime     @map("created_at")
+  updatedAt      DateTime     @map("updated_at")
+  ScrumProject   ScrumProject @relation(fields: [ScrumProjectId], references: [id])
+  scrumEpics     ScrumEpic[]
+  ScrumProjectId String       @map("scrum_Project_id")
+  scrumTasks     ScrumTask[]
 
   @@map("sprints")
 }
 
 model DraftSprint {
-  id           String      @id @default(uuid())
-  title        String
-  scrumSpace   ScrumSpace  @relation(fields: [scrumSpaceId], references: [id])
-  scrumSpaceId String      @map("scrum_space_id")
-  createdAt    DateTime    @map("created_at")
-  updatedAt    DateTime    @map("updated_at")
-  scrumTasks   ScrumTask[]
-  scrumEpics   ScrumEpic[]
+  id             String       @id @default(uuid())
+  title          String
+  ScrumProject   ScrumProject @relation(fields: [ScrumProjectId], references: [id])
+  ScrumProjectId String       @map("scrum_Project_id")
+  createdAt      DateTime     @map("created_at")
+  updatedAt      DateTime     @map("updated_at")
+  scrumTasks     ScrumTask[]
+  scrumEpics     ScrumEpic[]
 }
 
 model ScrumEpic {
@@ -127,47 +127,48 @@ model ScrumEpic {
   @@map("scrum_epics")
 }
 
-model Space {
-  id           String        @id @default(uuid())
-  scrumSpace   ScrumSpace    @relation(fields: [scrumSpaceId], references: [id])
-  scrumSpaceId String        @map("scrum_space_id")
-  spaceType    SpaceType     @map("space_type")
-  author       User?         @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
-  userClerkId  String?       @map("user_clerk_id")
-  starred      Boolean       @default(false)
-  createdAt    DateTime      @map("created_at")
-  updatedAt    DateTime      @map("updated_at")
-  spaceMembers SpaceMember[]
+model Project {
+  id             String          @id @default(uuid())
+  ScrumProject   ScrumProject    @relation(fields: [ScrumProjectId], references: [id])
+  ScrumProjectId String          @map("scrum_Project_id")
+  ProjectType    ProjectType     @map("Project_type")
+  author         User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
+  userClerkId    String?         @map("user_clerk_id")
+  starred        Boolean         @default(false)
+  createdAt      DateTime        @map("created_at")
+  updatedAt      DateTime        @map("updated_at")
+  ProjectMembers ProjectMember[]
 
-  @@map("space")
+  @@map("Project")
 }
 
-model SpaceMember {
-  id          String          @id @default(uuid())
-  user        User            @relation(fields: [userClerkId], references: [clerkId], onDelete: Cascade)
-  userClerkId String          @map("user_clerk_id")
-  role        SpaceMemberRole
-  space       Space           @relation(fields: [spaceId], references: [id])
-  spaceId     String          @map("space_id")
-  createdAt   DateTime        @map("created_at")
-  updatedAt   DateTime        @map("updated_at")
+model ProjectMember {
+  id          String            @id @default(uuid())
+  user        User              @relation(fields: [userClerkId], references: [clerkId], onDelete: Cascade)
+  userClerkId String            @map("user_clerk_id")
+  role        ProjectMemberRole
+  Project     Project           @relation(fields: [ProjectId], references: [id])
+  ProjectId   String            @map("Project_id")
+  createdAt   DateTime          @map("created_at")
+  updatedAt   DateTime          @map("updated_at")
 
   AssignedTasks Task[]
   AssignedEpics Epic[]
 
-  @@map("space_members")
+  @@map("Project_members")
 }
 
 model Task {
-  id          String        @id @default(uuid())
-  author      User?         @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
-  userClerkId String?       @map("user_clerk_id")
-  startDate   DateTime      @map("start_date")
-  dueDate     DateTime      @map("due_date")
-  createdAt   DateTime      @map("created_at")
-  updatedAt   DateTime      @map("updated_at")
+  id          String          @id @default(uuid())
+  tag_id      String
+  author      User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
+  userClerkId String?         @map("user_clerk_id")
+  startDate   DateTime        @map("start_date")
+  dueDate     DateTime        @map("due_date")
+  createdAt   DateTime        @map("created_at")
+  updatedAt   DateTime        @map("updated_at")
   scrumTasks  ScrumTask[]
-  AssignedTo  SpaceMember[]
+  AssignedTo  ProjectMember[]
 
   @@map("tasks")
 }
@@ -191,18 +192,26 @@ model ScrumTask {
   @@map("scrum_task")
 }
 
+enum TaskUrgency {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 enum ScrumTaskStatus {
   TODO
   IN_PROGRESS
+  IN_REVIEW
   DONE
 }
 
-enum SpaceType {
+enum ProjectType {
   SCRUM
   KANBAN
 }
 
-enum SpaceMemberRole {
+enum ProjectMemberRole {
   ADMIN
   USER
 }
