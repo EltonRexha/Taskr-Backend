@@ -6,10 +6,14 @@ import {
 } from '@nestjs/common';
 import { ClerkService } from './clerk.service';
 import { Request } from 'express';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ClerkAuthGuard implements CanActivate {
-  constructor(private clerkService: ClerkService) {}
+  constructor(
+    private clerkService: ClerkService,
+    private usersService: UsersService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest<Request>();
@@ -27,7 +31,15 @@ export class ClerkAuthGuard implements CanActivate {
     try {
       const session = await this.clerkService.getSession(token);
       const user = await this.clerkService.getUser(session.sub);
-      request.user = user;
+      request.clerkUser = user;
+
+      //Check if the user was registered on our database through our webhook
+      const dbUser = await this.usersService.findOne(user.id);
+      if (!dbUser) {
+        throw new UnauthorizedException('User not found in database', {
+          description: 'Please try again later',
+        });
+      }
 
       if (user.banned) {
         throw new UnauthorizedException('User is banned');

@@ -27,7 +27,7 @@ export type AggregateDraftSprint = {
 export type DraftSprintMinAggregateOutputType = {
   id: string | null
   title: string | null
-  scrumSpaceId: string | null
+  ScrumProjectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -35,7 +35,7 @@ export type DraftSprintMinAggregateOutputType = {
 export type DraftSprintMaxAggregateOutputType = {
   id: string | null
   title: string | null
-  scrumSpaceId: string | null
+  ScrumProjectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -43,7 +43,7 @@ export type DraftSprintMaxAggregateOutputType = {
 export type DraftSprintCountAggregateOutputType = {
   id: number
   title: number
-  scrumSpaceId: number
+  ScrumProjectId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -53,7 +53,7 @@ export type DraftSprintCountAggregateOutputType = {
 export type DraftSprintMinAggregateInputType = {
   id?: true
   title?: true
-  scrumSpaceId?: true
+  ScrumProjectId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -61,7 +61,7 @@ export type DraftSprintMinAggregateInputType = {
 export type DraftSprintMaxAggregateInputType = {
   id?: true
   title?: true
-  scrumSpaceId?: true
+  ScrumProjectId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -69,7 +69,7 @@ export type DraftSprintMaxAggregateInputType = {
 export type DraftSprintCountAggregateInputType = {
   id?: true
   title?: true
-  scrumSpaceId?: true
+  ScrumProjectId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -150,7 +150,7 @@ export type DraftSprintGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 export type DraftSprintGroupByOutputType = {
   id: string
   title: string
-  scrumSpaceId: string
+  ScrumProjectId: string
   createdAt: Date
   updatedAt: Date
   _count: DraftSprintCountAggregateOutputType | null
@@ -179,10 +179,10 @@ export type DraftSprintWhereInput = {
   NOT?: Prisma.DraftSprintWhereInput | Prisma.DraftSprintWhereInput[]
   id?: Prisma.StringFilter<"DraftSprint"> | string
   title?: Prisma.StringFilter<"DraftSprint"> | string
-  scrumSpaceId?: Prisma.StringFilter<"DraftSprint"> | string
+  ScrumProjectId?: Prisma.StringFilter<"DraftSprint"> | string
   createdAt?: Prisma.DateTimeFilter<"DraftSprint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DraftSprint"> | Date | string
-  scrumSpace?: Prisma.XOR<Prisma.ScrumSpaceScalarRelationFilter, Prisma.ScrumSpaceWhereInput>
+  ScrumProject?: Prisma.XOR<Prisma.ScrumProjectScalarRelationFilter, Prisma.ScrumProjectWhereInput>
   scrumTasks?: Prisma.ScrumTaskListRelationFilter
   scrumEpics?: Prisma.ScrumEpicListRelationFilter
 }
@@ -190,10 +190,10 @@ export type DraftSprintWhereInput = {
 export type DraftSprintOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  scrumSpaceId?: Prisma.SortOrder
+  ScrumProjectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  scrumSpace?: Prisma.ScrumSpaceOrderByWithRelationInput
+  ScrumProject?: Prisma.ScrumProjectOrderByWithRelationInput
   scrumTasks?: Prisma.ScrumTaskOrderByRelationAggregateInput
   scrumEpics?: Prisma.ScrumEpicOrderByRelationAggregateInput
 }
@@ -204,10 +204,10 @@ export type DraftSprintWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.DraftSprintWhereInput[]
   NOT?: Prisma.DraftSprintWhereInput | Prisma.DraftSprintWhereInput[]
   title?: Prisma.StringFilter<"DraftSprint"> | string
-  scrumSpaceId?: Prisma.StringFilter<"DraftSprint"> | string
+  ScrumProjectId?: Prisma.StringFilter<"DraftSprint"> | string
   createdAt?: Prisma.DateTimeFilter<"DraftSprint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DraftSprint"> | Date | string
-  scrumSpace?: Prisma.XOR<Prisma.ScrumSpaceScalarRelationFilter, Prisma.ScrumSpaceWhereInput>
+  ScrumProject?: Prisma.XOR<Prisma.ScrumProjectScalarRelationFilter, Prisma.ScrumProjectWhereInput>
   scrumTasks?: Prisma.ScrumTaskListRelationFilter
   scrumEpics?: Prisma.ScrumEpicListRelationFilter
 }, "id">
@@ -215,7 +215,7 @@ export type DraftSprintWhereUniqueInput = Prisma.AtLeast<{
 export type DraftSprintOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  scrumSpaceId?: Prisma.SortOrder
+  ScrumProjectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.DraftSprintCountOrderByAggregateInput
@@ -229,7 +229,7 @@ export type DraftSprintScalarWhereWithAggregatesInput = {
   NOT?: Prisma.DraftSprintScalarWhereWithAggregatesInput | Prisma.DraftSprintScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"DraftSprint"> | string
   title?: Prisma.StringWithAggregatesFilter<"DraftSprint"> | string
-  scrumSpaceId?: Prisma.StringWithAggregatesFilter<"DraftSprint"> | string
+  ScrumProjectId?: Prisma.StringWithAggregatesFilter<"DraftSprint"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"DraftSprint"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"DraftSprint"> | Date | string
 }
@@ -239,7 +239,7 @@ export type DraftSprintCreateInput = {
   title: string
   createdAt: Date | string
   updatedAt: Date | string
-  scrumSpace: Prisma.ScrumSpaceCreateNestedOneWithoutDraftSprintsInput
+  ScrumProject: Prisma.ScrumProjectCreateNestedOneWithoutDraftSprintsInput
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutDraftSprintInput
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutDraftSprintInput
 }
@@ -247,7 +247,7 @@ export type DraftSprintCreateInput = {
 export type DraftSprintUncheckedCreateInput = {
   id?: string
   title: string
-  scrumSpaceId: string
+  ScrumProjectId: string
   createdAt: Date | string
   updatedAt: Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedCreateNestedManyWithoutDraftSprintInput
@@ -259,7 +259,7 @@ export type DraftSprintUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpace?: Prisma.ScrumSpaceUpdateOneRequiredWithoutDraftSprintsNestedInput
+  ScrumProject?: Prisma.ScrumProjectUpdateOneRequiredWithoutDraftSprintsNestedInput
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutDraftSprintNestedInput
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutDraftSprintNestedInput
 }
@@ -267,7 +267,7 @@ export type DraftSprintUpdateInput = {
 export type DraftSprintUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  scrumSpaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  ScrumProjectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedUpdateManyWithoutDraftSprintNestedInput
@@ -277,7 +277,7 @@ export type DraftSprintUncheckedUpdateInput = {
 export type DraftSprintCreateManyInput = {
   id?: string
   title: string
-  scrumSpaceId: string
+  ScrumProjectId: string
   createdAt: Date | string
   updatedAt: Date | string
 }
@@ -292,7 +292,7 @@ export type DraftSprintUpdateManyMutationInput = {
 export type DraftSprintUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  scrumSpaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  ScrumProjectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -310,7 +310,7 @@ export type DraftSprintOrderByRelationAggregateInput = {
 export type DraftSprintCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  scrumSpaceId?: Prisma.SortOrder
+  ScrumProjectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -318,7 +318,7 @@ export type DraftSprintCountOrderByAggregateInput = {
 export type DraftSprintMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  scrumSpaceId?: Prisma.SortOrder
+  ScrumProjectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -326,7 +326,7 @@ export type DraftSprintMaxOrderByAggregateInput = {
 export type DraftSprintMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  scrumSpaceId?: Prisma.SortOrder
+  ScrumProjectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -336,45 +336,45 @@ export type DraftSprintNullableScalarRelationFilter = {
   isNot?: Prisma.DraftSprintWhereInput | null
 }
 
-export type DraftSprintCreateNestedManyWithoutScrumSpaceInput = {
-  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput> | Prisma.DraftSprintCreateWithoutScrumSpaceInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput[]
-  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput | Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput[]
-  createMany?: Prisma.DraftSprintCreateManyScrumSpaceInputEnvelope
+export type DraftSprintCreateNestedManyWithoutScrumProjectInput = {
+  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput> | Prisma.DraftSprintCreateWithoutScrumProjectInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput[]
+  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput | Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput[]
+  createMany?: Prisma.DraftSprintCreateManyScrumProjectInputEnvelope
   connect?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
 }
 
-export type DraftSprintUncheckedCreateNestedManyWithoutScrumSpaceInput = {
-  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput> | Prisma.DraftSprintCreateWithoutScrumSpaceInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput[]
-  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput | Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput[]
-  createMany?: Prisma.DraftSprintCreateManyScrumSpaceInputEnvelope
+export type DraftSprintUncheckedCreateNestedManyWithoutScrumProjectInput = {
+  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput> | Prisma.DraftSprintCreateWithoutScrumProjectInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput[]
+  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput | Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput[]
+  createMany?: Prisma.DraftSprintCreateManyScrumProjectInputEnvelope
   connect?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
 }
 
-export type DraftSprintUpdateManyWithoutScrumSpaceNestedInput = {
-  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput> | Prisma.DraftSprintCreateWithoutScrumSpaceInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput[]
-  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput | Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput[]
-  upsert?: Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumSpaceInput | Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumSpaceInput[]
-  createMany?: Prisma.DraftSprintCreateManyScrumSpaceInputEnvelope
+export type DraftSprintUpdateManyWithoutScrumProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput> | Prisma.DraftSprintCreateWithoutScrumProjectInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput[]
+  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput | Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput[]
+  upsert?: Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumProjectInput | Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumProjectInput[]
+  createMany?: Prisma.DraftSprintCreateManyScrumProjectInputEnvelope
   set?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
   disconnect?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
   delete?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
   connect?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
-  update?: Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumSpaceInput | Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumSpaceInput[]
-  updateMany?: Prisma.DraftSprintUpdateManyWithWhereWithoutScrumSpaceInput | Prisma.DraftSprintUpdateManyWithWhereWithoutScrumSpaceInput[]
+  update?: Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumProjectInput | Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumProjectInput[]
+  updateMany?: Prisma.DraftSprintUpdateManyWithWhereWithoutScrumProjectInput | Prisma.DraftSprintUpdateManyWithWhereWithoutScrumProjectInput[]
   deleteMany?: Prisma.DraftSprintScalarWhereInput | Prisma.DraftSprintScalarWhereInput[]
 }
 
-export type DraftSprintUncheckedUpdateManyWithoutScrumSpaceNestedInput = {
-  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput> | Prisma.DraftSprintCreateWithoutScrumSpaceInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput[]
-  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput | Prisma.DraftSprintCreateOrConnectWithoutScrumSpaceInput[]
-  upsert?: Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumSpaceInput | Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumSpaceInput[]
-  createMany?: Prisma.DraftSprintCreateManyScrumSpaceInputEnvelope
+export type DraftSprintUncheckedUpdateManyWithoutScrumProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput> | Prisma.DraftSprintCreateWithoutScrumProjectInput[] | Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput[]
+  connectOrCreate?: Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput | Prisma.DraftSprintCreateOrConnectWithoutScrumProjectInput[]
+  upsert?: Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumProjectInput | Prisma.DraftSprintUpsertWithWhereUniqueWithoutScrumProjectInput[]
+  createMany?: Prisma.DraftSprintCreateManyScrumProjectInputEnvelope
   set?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
   disconnect?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
   delete?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
   connect?: Prisma.DraftSprintWhereUniqueInput | Prisma.DraftSprintWhereUniqueInput[]
-  update?: Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumSpaceInput | Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumSpaceInput[]
-  updateMany?: Prisma.DraftSprintUpdateManyWithWhereWithoutScrumSpaceInput | Prisma.DraftSprintUpdateManyWithWhereWithoutScrumSpaceInput[]
+  update?: Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumProjectInput | Prisma.DraftSprintUpdateWithWhereUniqueWithoutScrumProjectInput[]
+  updateMany?: Prisma.DraftSprintUpdateManyWithWhereWithoutScrumProjectInput | Prisma.DraftSprintUpdateManyWithWhereWithoutScrumProjectInput[]
   deleteMany?: Prisma.DraftSprintScalarWhereInput | Prisma.DraftSprintScalarWhereInput[]
 }
 
@@ -410,7 +410,7 @@ export type DraftSprintUpdateOneWithoutScrumTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DraftSprintUpdateToOneWithWhereWithoutScrumTasksInput, Prisma.DraftSprintUpdateWithoutScrumTasksInput>, Prisma.DraftSprintUncheckedUpdateWithoutScrumTasksInput>
 }
 
-export type DraftSprintCreateWithoutScrumSpaceInput = {
+export type DraftSprintCreateWithoutScrumProjectInput = {
   id?: string
   title: string
   createdAt: Date | string
@@ -419,7 +419,7 @@ export type DraftSprintCreateWithoutScrumSpaceInput = {
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutDraftSprintInput
 }
 
-export type DraftSprintUncheckedCreateWithoutScrumSpaceInput = {
+export type DraftSprintUncheckedCreateWithoutScrumProjectInput = {
   id?: string
   title: string
   createdAt: Date | string
@@ -428,30 +428,30 @@ export type DraftSprintUncheckedCreateWithoutScrumSpaceInput = {
   scrumEpics?: Prisma.ScrumEpicUncheckedCreateNestedManyWithoutDraftSprintInput
 }
 
-export type DraftSprintCreateOrConnectWithoutScrumSpaceInput = {
+export type DraftSprintCreateOrConnectWithoutScrumProjectInput = {
   where: Prisma.DraftSprintWhereUniqueInput
-  create: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput>
+  create: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput>
 }
 
-export type DraftSprintCreateManyScrumSpaceInputEnvelope = {
-  data: Prisma.DraftSprintCreateManyScrumSpaceInput | Prisma.DraftSprintCreateManyScrumSpaceInput[]
+export type DraftSprintCreateManyScrumProjectInputEnvelope = {
+  data: Prisma.DraftSprintCreateManyScrumProjectInput | Prisma.DraftSprintCreateManyScrumProjectInput[]
   skipDuplicates?: boolean
 }
 
-export type DraftSprintUpsertWithWhereUniqueWithoutScrumSpaceInput = {
+export type DraftSprintUpsertWithWhereUniqueWithoutScrumProjectInput = {
   where: Prisma.DraftSprintWhereUniqueInput
-  update: Prisma.XOR<Prisma.DraftSprintUpdateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedUpdateWithoutScrumSpaceInput>
-  create: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedCreateWithoutScrumSpaceInput>
+  update: Prisma.XOR<Prisma.DraftSprintUpdateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedUpdateWithoutScrumProjectInput>
+  create: Prisma.XOR<Prisma.DraftSprintCreateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedCreateWithoutScrumProjectInput>
 }
 
-export type DraftSprintUpdateWithWhereUniqueWithoutScrumSpaceInput = {
+export type DraftSprintUpdateWithWhereUniqueWithoutScrumProjectInput = {
   where: Prisma.DraftSprintWhereUniqueInput
-  data: Prisma.XOR<Prisma.DraftSprintUpdateWithoutScrumSpaceInput, Prisma.DraftSprintUncheckedUpdateWithoutScrumSpaceInput>
+  data: Prisma.XOR<Prisma.DraftSprintUpdateWithoutScrumProjectInput, Prisma.DraftSprintUncheckedUpdateWithoutScrumProjectInput>
 }
 
-export type DraftSprintUpdateManyWithWhereWithoutScrumSpaceInput = {
+export type DraftSprintUpdateManyWithWhereWithoutScrumProjectInput = {
   where: Prisma.DraftSprintScalarWhereInput
-  data: Prisma.XOR<Prisma.DraftSprintUpdateManyMutationInput, Prisma.DraftSprintUncheckedUpdateManyWithoutScrumSpaceInput>
+  data: Prisma.XOR<Prisma.DraftSprintUpdateManyMutationInput, Prisma.DraftSprintUncheckedUpdateManyWithoutScrumProjectInput>
 }
 
 export type DraftSprintScalarWhereInput = {
@@ -460,7 +460,7 @@ export type DraftSprintScalarWhereInput = {
   NOT?: Prisma.DraftSprintScalarWhereInput | Prisma.DraftSprintScalarWhereInput[]
   id?: Prisma.StringFilter<"DraftSprint"> | string
   title?: Prisma.StringFilter<"DraftSprint"> | string
-  scrumSpaceId?: Prisma.StringFilter<"DraftSprint"> | string
+  ScrumProjectId?: Prisma.StringFilter<"DraftSprint"> | string
   createdAt?: Prisma.DateTimeFilter<"DraftSprint"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"DraftSprint"> | Date | string
 }
@@ -470,14 +470,14 @@ export type DraftSprintCreateWithoutScrumEpicsInput = {
   title: string
   createdAt: Date | string
   updatedAt: Date | string
-  scrumSpace: Prisma.ScrumSpaceCreateNestedOneWithoutDraftSprintsInput
+  ScrumProject: Prisma.ScrumProjectCreateNestedOneWithoutDraftSprintsInput
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutDraftSprintInput
 }
 
 export type DraftSprintUncheckedCreateWithoutScrumEpicsInput = {
   id?: string
   title: string
-  scrumSpaceId: string
+  ScrumProjectId: string
   createdAt: Date | string
   updatedAt: Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedCreateNestedManyWithoutDraftSprintInput
@@ -504,14 +504,14 @@ export type DraftSprintUpdateWithoutScrumEpicsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpace?: Prisma.ScrumSpaceUpdateOneRequiredWithoutDraftSprintsNestedInput
+  ScrumProject?: Prisma.ScrumProjectUpdateOneRequiredWithoutDraftSprintsNestedInput
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutDraftSprintNestedInput
 }
 
 export type DraftSprintUncheckedUpdateWithoutScrumEpicsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  scrumSpaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  ScrumProjectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedUpdateManyWithoutDraftSprintNestedInput
@@ -522,14 +522,14 @@ export type DraftSprintCreateWithoutScrumTasksInput = {
   title: string
   createdAt: Date | string
   updatedAt: Date | string
-  scrumSpace: Prisma.ScrumSpaceCreateNestedOneWithoutDraftSprintsInput
+  ScrumProject: Prisma.ScrumProjectCreateNestedOneWithoutDraftSprintsInput
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutDraftSprintInput
 }
 
 export type DraftSprintUncheckedCreateWithoutScrumTasksInput = {
   id?: string
   title: string
-  scrumSpaceId: string
+  ScrumProjectId: string
   createdAt: Date | string
   updatedAt: Date | string
   scrumEpics?: Prisma.ScrumEpicUncheckedCreateNestedManyWithoutDraftSprintInput
@@ -556,27 +556,27 @@ export type DraftSprintUpdateWithoutScrumTasksInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpace?: Prisma.ScrumSpaceUpdateOneRequiredWithoutDraftSprintsNestedInput
+  ScrumProject?: Prisma.ScrumProjectUpdateOneRequiredWithoutDraftSprintsNestedInput
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutDraftSprintNestedInput
 }
 
 export type DraftSprintUncheckedUpdateWithoutScrumTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  scrumSpaceId?: Prisma.StringFieldUpdateOperationsInput | string
+  ScrumProjectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scrumEpics?: Prisma.ScrumEpicUncheckedUpdateManyWithoutDraftSprintNestedInput
 }
 
-export type DraftSprintCreateManyScrumSpaceInput = {
+export type DraftSprintCreateManyScrumProjectInput = {
   id?: string
   title: string
   createdAt: Date | string
   updatedAt: Date | string
 }
 
-export type DraftSprintUpdateWithoutScrumSpaceInput = {
+export type DraftSprintUpdateWithoutScrumProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -585,7 +585,7 @@ export type DraftSprintUpdateWithoutScrumSpaceInput = {
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutDraftSprintNestedInput
 }
 
-export type DraftSprintUncheckedUpdateWithoutScrumSpaceInput = {
+export type DraftSprintUncheckedUpdateWithoutScrumProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -594,7 +594,7 @@ export type DraftSprintUncheckedUpdateWithoutScrumSpaceInput = {
   scrumEpics?: Prisma.ScrumEpicUncheckedUpdateManyWithoutDraftSprintNestedInput
 }
 
-export type DraftSprintUncheckedUpdateManyWithoutScrumSpaceInput = {
+export type DraftSprintUncheckedUpdateManyWithoutScrumProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -644,10 +644,10 @@ export type DraftSprintCountOutputTypeCountScrumEpicsArgs<ExtArgs extends runtim
 export type DraftSprintSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  scrumSpaceId?: boolean
+  ScrumProjectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  scrumSpace?: boolean | Prisma.ScrumSpaceDefaultArgs<ExtArgs>
+  ScrumProject?: boolean | Prisma.ScrumProjectDefaultArgs<ExtArgs>
   scrumTasks?: boolean | Prisma.DraftSprint$scrumTasksArgs<ExtArgs>
   scrumEpics?: boolean | Prisma.DraftSprint$scrumEpicsArgs<ExtArgs>
   _count?: boolean | Prisma.DraftSprintCountOutputTypeDefaultArgs<ExtArgs>
@@ -656,54 +656,54 @@ export type DraftSprintSelect<ExtArgs extends runtime.Types.Extensions.InternalA
 export type DraftSprintSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  scrumSpaceId?: boolean
+  ScrumProjectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  scrumSpace?: boolean | Prisma.ScrumSpaceDefaultArgs<ExtArgs>
+  ScrumProject?: boolean | Prisma.ScrumProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["draftSprint"]>
 
 export type DraftSprintSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  scrumSpaceId?: boolean
+  ScrumProjectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  scrumSpace?: boolean | Prisma.ScrumSpaceDefaultArgs<ExtArgs>
+  ScrumProject?: boolean | Prisma.ScrumProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["draftSprint"]>
 
 export type DraftSprintSelectScalar = {
   id?: boolean
   title?: boolean
-  scrumSpaceId?: boolean
+  ScrumProjectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type DraftSprintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "scrumSpaceId" | "createdAt" | "updatedAt", ExtArgs["result"]["draftSprint"]>
+export type DraftSprintOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "ScrumProjectId" | "createdAt" | "updatedAt", ExtArgs["result"]["draftSprint"]>
 export type DraftSprintInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scrumSpace?: boolean | Prisma.ScrumSpaceDefaultArgs<ExtArgs>
+  ScrumProject?: boolean | Prisma.ScrumProjectDefaultArgs<ExtArgs>
   scrumTasks?: boolean | Prisma.DraftSprint$scrumTasksArgs<ExtArgs>
   scrumEpics?: boolean | Prisma.DraftSprint$scrumEpicsArgs<ExtArgs>
   _count?: boolean | Prisma.DraftSprintCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DraftSprintIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scrumSpace?: boolean | Prisma.ScrumSpaceDefaultArgs<ExtArgs>
+  ScrumProject?: boolean | Prisma.ScrumProjectDefaultArgs<ExtArgs>
 }
 export type DraftSprintIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scrumSpace?: boolean | Prisma.ScrumSpaceDefaultArgs<ExtArgs>
+  ScrumProject?: boolean | Prisma.ScrumProjectDefaultArgs<ExtArgs>
 }
 
 export type $DraftSprintPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "DraftSprint"
   objects: {
-    scrumSpace: Prisma.$ScrumSpacePayload<ExtArgs>
+    ScrumProject: Prisma.$ScrumProjectPayload<ExtArgs>
     scrumTasks: Prisma.$ScrumTaskPayload<ExtArgs>[]
     scrumEpics: Prisma.$ScrumEpicPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
-    scrumSpaceId: string
+    ScrumProjectId: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["draftSprint"]>
@@ -1100,7 +1100,7 @@ readonly fields: DraftSprintFieldRefs;
  */
 export interface Prisma__DraftSprintClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  scrumSpace<T extends Prisma.ScrumSpaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ScrumSpaceDefaultArgs<ExtArgs>>): Prisma.Prisma__ScrumSpaceClient<runtime.Types.Result.GetResult<Prisma.$ScrumSpacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  ScrumProject<T extends Prisma.ScrumProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ScrumProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ScrumProjectClient<runtime.Types.Result.GetResult<Prisma.$ScrumProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   scrumTasks<T extends Prisma.DraftSprint$scrumTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DraftSprint$scrumTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   scrumEpics<T extends Prisma.DraftSprint$scrumEpicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DraftSprint$scrumEpicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumEpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1134,7 +1134,7 @@ export interface Prisma__DraftSprintClient<T, Null = never, ExtArgs extends runt
 export interface DraftSprintFieldRefs {
   readonly id: Prisma.FieldRef<"DraftSprint", 'String'>
   readonly title: Prisma.FieldRef<"DraftSprint", 'String'>
-  readonly scrumSpaceId: Prisma.FieldRef<"DraftSprint", 'String'>
+  readonly ScrumProjectId: Prisma.FieldRef<"DraftSprint", 'String'>
   readonly createdAt: Prisma.FieldRef<"DraftSprint", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"DraftSprint", 'DateTime'>
 }

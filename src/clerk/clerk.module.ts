@@ -4,8 +4,8 @@ import { UsersModule } from 'src/users/users.module';
 import { ClerkAuthGuard } from './clerk-auth.guard';
 
 @Module({
-  providers: [ClerkService, ClerkAuthGuard],
   imports: [UsersModule],
+  providers: [ClerkService, ClerkAuthGuard],
   exports: [ClerkService, ClerkAuthGuard],
 })
 export class ClerkModule {}

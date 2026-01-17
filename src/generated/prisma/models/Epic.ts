@@ -198,7 +198,7 @@ export type EpicWhereInput = {
   dueDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
-  assignedTo?: Prisma.SpaceMemberListRelationFilter
+  assignedTo?: Prisma.ProjectMemberListRelationFilter
   scrumEpics?: Prisma.ScrumEpicListRelationFilter
 }
 
@@ -210,7 +210,7 @@ export type EpicOrderByWithRelationInput = {
   dueDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  assignedTo?: Prisma.SpaceMemberOrderByRelationAggregateInput
+  assignedTo?: Prisma.ProjectMemberOrderByRelationAggregateInput
   scrumEpics?: Prisma.ScrumEpicOrderByRelationAggregateInput
 }
 
@@ -225,7 +225,7 @@ export type EpicWhereUniqueInput = Prisma.AtLeast<{
   dueDate?: Prisma.DateTimeFilter<"Epic"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Epic"> | Date | string
-  assignedTo?: Prisma.SpaceMemberListRelationFilter
+  assignedTo?: Prisma.ProjectMemberListRelationFilter
   scrumEpics?: Prisma.ScrumEpicListRelationFilter
 }, "id">
 
@@ -263,7 +263,7 @@ export type EpicCreateInput = {
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  assignedTo?: Prisma.SpaceMemberCreateNestedManyWithoutAssignedEpicsInput
+  assignedTo?: Prisma.ProjectMemberCreateNestedManyWithoutAssignedEpicsInput
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutEpicInput
 }
 
@@ -275,7 +275,7 @@ export type EpicUncheckedCreateInput = {
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  assignedTo?: Prisma.SpaceMemberUncheckedCreateNestedManyWithoutAssignedEpicsInput
+  assignedTo?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutAssignedEpicsInput
   scrumEpics?: Prisma.ScrumEpicUncheckedCreateNestedManyWithoutEpicInput
 }
 
@@ -287,7 +287,7 @@ export type EpicUpdateInput = {
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignedTo?: Prisma.SpaceMemberUpdateManyWithoutAssignedEpicsNestedInput
+  assignedTo?: Prisma.ProjectMemberUpdateManyWithoutAssignedEpicsNestedInput
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutEpicNestedInput
 }
 
@@ -299,7 +299,7 @@ export type EpicUncheckedUpdateInput = {
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignedTo?: Prisma.SpaceMemberUncheckedUpdateManyWithoutAssignedEpicsNestedInput
+  assignedTo?: Prisma.ProjectMemberUncheckedUpdateManyWithoutAssignedEpicsNestedInput
   scrumEpics?: Prisma.ScrumEpicUncheckedUpdateManyWithoutEpicNestedInput
 }
 
@@ -442,7 +442,7 @@ export type EpicCreateWithoutScrumEpicsInput = {
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  assignedTo?: Prisma.SpaceMemberCreateNestedManyWithoutAssignedEpicsInput
+  assignedTo?: Prisma.ProjectMemberCreateNestedManyWithoutAssignedEpicsInput
 }
 
 export type EpicUncheckedCreateWithoutScrumEpicsInput = {
@@ -453,7 +453,7 @@ export type EpicUncheckedCreateWithoutScrumEpicsInput = {
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  assignedTo?: Prisma.SpaceMemberUncheckedCreateNestedManyWithoutAssignedEpicsInput
+  assignedTo?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutAssignedEpicsInput
 }
 
 export type EpicCreateOrConnectWithoutScrumEpicsInput = {
@@ -480,7 +480,7 @@ export type EpicUpdateWithoutScrumEpicsInput = {
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignedTo?: Prisma.SpaceMemberUpdateManyWithoutAssignedEpicsNestedInput
+  assignedTo?: Prisma.ProjectMemberUpdateManyWithoutAssignedEpicsNestedInput
 }
 
 export type EpicUncheckedUpdateWithoutScrumEpicsInput = {
@@ -491,7 +491,7 @@ export type EpicUncheckedUpdateWithoutScrumEpicsInput = {
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  assignedTo?: Prisma.SpaceMemberUncheckedUpdateManyWithoutAssignedEpicsNestedInput
+  assignedTo?: Prisma.ProjectMemberUncheckedUpdateManyWithoutAssignedEpicsNestedInput
 }
 
 export type EpicCreateWithoutAssignedToInput = {
@@ -611,7 +611,7 @@ export type EpicCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  * EpicCountOutputType without action
  */
 export type EpicCountOutputTypeCountAssignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SpaceMemberWhereInput
+  where?: Prisma.ProjectMemberWhereInput
 }
 
 /**
@@ -677,7 +677,7 @@ export type EpicIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $EpicPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Epic"
   objects: {
-    assignedTo: Prisma.$SpaceMemberPayload<ExtArgs>[]
+    assignedTo: Prisma.$ProjectMemberPayload<ExtArgs>[]
     scrumEpics: Prisma.$ScrumEpicPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1082,7 +1082,7 @@ readonly fields: EpicFieldRefs;
  */
 export interface Prisma__EpicClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  assignedTo<T extends Prisma.Epic$assignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Epic$assignedToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SpaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assignedTo<T extends Prisma.Epic$assignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Epic$assignedToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   scrumEpics<T extends Prisma.Epic$scrumEpicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Epic$scrumEpicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumEpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1512,23 +1512,23 @@ export type EpicDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
  */
 export type Epic$assignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the SpaceMember
+   * Select specific fields to fetch from the ProjectMember
    */
-  select?: Prisma.SpaceMemberSelect<ExtArgs> | null
+  select?: Prisma.ProjectMemberSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the SpaceMember
+   * Omit specific fields from the ProjectMember
    */
-  omit?: Prisma.SpaceMemberOmit<ExtArgs> | null
+  omit?: Prisma.ProjectMemberOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.SpaceMemberInclude<ExtArgs> | null
-  where?: Prisma.SpaceMemberWhereInput
-  orderBy?: Prisma.SpaceMemberOrderByWithRelationInput | Prisma.SpaceMemberOrderByWithRelationInput[]
-  cursor?: Prisma.SpaceMemberWhereUniqueInput
+  include?: Prisma.ProjectMemberInclude<ExtArgs> | null
+  where?: Prisma.ProjectMemberWhereInput
+  orderBy?: Prisma.ProjectMemberOrderByWithRelationInput | Prisma.ProjectMemberOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectMemberWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.SpaceMemberScalarFieldEnum | Prisma.SpaceMemberScalarFieldEnum[]
+  distinct?: Prisma.ProjectMemberScalarFieldEnum | Prisma.ProjectMemberScalarFieldEnum[]
 }
 
 /**

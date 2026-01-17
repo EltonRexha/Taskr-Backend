@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -13,6 +15,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { UseGuards } from '@nestjs/common';
 import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 import type { Request } from 'express';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @UseGuards(ClerkAuthGuard)
 @Controller('projects')
@@ -25,8 +28,19 @@ export class ProjectsController {
   }
 
   @Get()
-  findAll() {
-    return 'Hello World';
+  async findAll(@Req() req: Request, @Query() paginationDto: PaginationDto) {
+    const projects = await this.projectsService.findAll(
+      req.clerkUser,
+      paginationDto,
+    );
+    return {
+      data: projects.map((project) => ({
+        id: project.id,
+        name: project.name,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt,
+      })),
+    };
   }
 
   @Get(':id')
