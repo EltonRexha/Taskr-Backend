@@ -8,10 +8,13 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors();
+
   app.use(
     '/webhooks/clerk',
     bodyParser.json({
       verify: (req: any, res, buf) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         req.rawBody = buf.toString();
       },
     }),

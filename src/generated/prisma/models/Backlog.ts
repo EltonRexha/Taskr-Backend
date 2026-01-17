@@ -166,7 +166,7 @@ export type BacklogWhereInput = {
   id?: Prisma.StringFilter<"Backlog"> | string
   createdAt?: Prisma.DateTimeFilter<"Backlog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Backlog"> | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceListRelationFilter
+  ScrumProjects?: Prisma.ScrumProjectListRelationFilter
   scrumTasks?: Prisma.ScrumTaskListRelationFilter
   scrumEpics?: Prisma.ScrumEpicListRelationFilter
 }
@@ -175,7 +175,7 @@ export type BacklogOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  scrumSpaces?: Prisma.ScrumSpaceOrderByRelationAggregateInput
+  ScrumProjects?: Prisma.ScrumProjectOrderByRelationAggregateInput
   scrumTasks?: Prisma.ScrumTaskOrderByRelationAggregateInput
   scrumEpics?: Prisma.ScrumEpicOrderByRelationAggregateInput
 }
@@ -187,7 +187,7 @@ export type BacklogWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.BacklogWhereInput | Prisma.BacklogWhereInput[]
   createdAt?: Prisma.DateTimeFilter<"Backlog"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Backlog"> | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceListRelationFilter
+  ScrumProjects?: Prisma.ScrumProjectListRelationFilter
   scrumTasks?: Prisma.ScrumTaskListRelationFilter
   scrumEpics?: Prisma.ScrumEpicListRelationFilter
 }, "id">
@@ -214,7 +214,7 @@ export type BacklogCreateInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  scrumSpaces?: Prisma.ScrumSpaceCreateNestedManyWithoutBacklogInput
+  ScrumProjects?: Prisma.ScrumProjectCreateNestedManyWithoutBacklogInput
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutBacklogInput
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutBacklogInput
 }
@@ -223,7 +223,7 @@ export type BacklogUncheckedCreateInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUncheckedCreateNestedManyWithoutBacklogInput
+  ScrumProjects?: Prisma.ScrumProjectUncheckedCreateNestedManyWithoutBacklogInput
   scrumTasks?: Prisma.ScrumTaskUncheckedCreateNestedManyWithoutBacklogInput
   scrumEpics?: Prisma.ScrumEpicUncheckedCreateNestedManyWithoutBacklogInput
 }
@@ -232,7 +232,7 @@ export type BacklogUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUpdateManyWithoutBacklogNestedInput
+  ScrumProjects?: Prisma.ScrumProjectUpdateManyWithoutBacklogNestedInput
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutBacklogNestedInput
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutBacklogNestedInput
 }
@@ -241,7 +241,7 @@ export type BacklogUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUncheckedUpdateManyWithoutBacklogNestedInput
+  ScrumProjects?: Prisma.ScrumProjectUncheckedUpdateManyWithoutBacklogNestedInput
   scrumTasks?: Prisma.ScrumTaskUncheckedUpdateManyWithoutBacklogNestedInput
   scrumEpics?: Prisma.ScrumEpicUncheckedUpdateManyWithoutBacklogNestedInput
 }
@@ -292,18 +292,18 @@ export type BacklogNullableScalarRelationFilter = {
   isNot?: Prisma.BacklogWhereInput | null
 }
 
-export type BacklogCreateNestedOneWithoutScrumSpacesInput = {
-  create?: Prisma.XOR<Prisma.BacklogCreateWithoutScrumSpacesInput, Prisma.BacklogUncheckedCreateWithoutScrumSpacesInput>
-  connectOrCreate?: Prisma.BacklogCreateOrConnectWithoutScrumSpacesInput
+export type BacklogCreateNestedOneWithoutScrumProjectsInput = {
+  create?: Prisma.XOR<Prisma.BacklogCreateWithoutScrumProjectsInput, Prisma.BacklogUncheckedCreateWithoutScrumProjectsInput>
+  connectOrCreate?: Prisma.BacklogCreateOrConnectWithoutScrumProjectsInput
   connect?: Prisma.BacklogWhereUniqueInput
 }
 
-export type BacklogUpdateOneRequiredWithoutScrumSpacesNestedInput = {
-  create?: Prisma.XOR<Prisma.BacklogCreateWithoutScrumSpacesInput, Prisma.BacklogUncheckedCreateWithoutScrumSpacesInput>
-  connectOrCreate?: Prisma.BacklogCreateOrConnectWithoutScrumSpacesInput
-  upsert?: Prisma.BacklogUpsertWithoutScrumSpacesInput
+export type BacklogUpdateOneRequiredWithoutScrumProjectsNestedInput = {
+  create?: Prisma.XOR<Prisma.BacklogCreateWithoutScrumProjectsInput, Prisma.BacklogUncheckedCreateWithoutScrumProjectsInput>
+  connectOrCreate?: Prisma.BacklogCreateOrConnectWithoutScrumProjectsInput
+  upsert?: Prisma.BacklogUpsertWithoutScrumProjectsInput
   connect?: Prisma.BacklogWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.BacklogUpdateToOneWithWhereWithoutScrumSpacesInput, Prisma.BacklogUpdateWithoutScrumSpacesInput>, Prisma.BacklogUncheckedUpdateWithoutScrumSpacesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BacklogUpdateToOneWithWhereWithoutScrumProjectsInput, Prisma.BacklogUpdateWithoutScrumProjectsInput>, Prisma.BacklogUncheckedUpdateWithoutScrumProjectsInput>
 }
 
 export type BacklogCreateNestedOneWithoutScrumEpicsInput = {
@@ -338,7 +338,7 @@ export type BacklogUpdateOneWithoutScrumTasksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BacklogUpdateToOneWithWhereWithoutScrumTasksInput, Prisma.BacklogUpdateWithoutScrumTasksInput>, Prisma.BacklogUncheckedUpdateWithoutScrumTasksInput>
 }
 
-export type BacklogCreateWithoutScrumSpacesInput = {
+export type BacklogCreateWithoutScrumProjectsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -346,7 +346,7 @@ export type BacklogCreateWithoutScrumSpacesInput = {
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutBacklogInput
 }
 
-export type BacklogUncheckedCreateWithoutScrumSpacesInput = {
+export type BacklogUncheckedCreateWithoutScrumProjectsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -354,23 +354,23 @@ export type BacklogUncheckedCreateWithoutScrumSpacesInput = {
   scrumEpics?: Prisma.ScrumEpicUncheckedCreateNestedManyWithoutBacklogInput
 }
 
-export type BacklogCreateOrConnectWithoutScrumSpacesInput = {
+export type BacklogCreateOrConnectWithoutScrumProjectsInput = {
   where: Prisma.BacklogWhereUniqueInput
-  create: Prisma.XOR<Prisma.BacklogCreateWithoutScrumSpacesInput, Prisma.BacklogUncheckedCreateWithoutScrumSpacesInput>
+  create: Prisma.XOR<Prisma.BacklogCreateWithoutScrumProjectsInput, Prisma.BacklogUncheckedCreateWithoutScrumProjectsInput>
 }
 
-export type BacklogUpsertWithoutScrumSpacesInput = {
-  update: Prisma.XOR<Prisma.BacklogUpdateWithoutScrumSpacesInput, Prisma.BacklogUncheckedUpdateWithoutScrumSpacesInput>
-  create: Prisma.XOR<Prisma.BacklogCreateWithoutScrumSpacesInput, Prisma.BacklogUncheckedCreateWithoutScrumSpacesInput>
+export type BacklogUpsertWithoutScrumProjectsInput = {
+  update: Prisma.XOR<Prisma.BacklogUpdateWithoutScrumProjectsInput, Prisma.BacklogUncheckedUpdateWithoutScrumProjectsInput>
+  create: Prisma.XOR<Prisma.BacklogCreateWithoutScrumProjectsInput, Prisma.BacklogUncheckedCreateWithoutScrumProjectsInput>
   where?: Prisma.BacklogWhereInput
 }
 
-export type BacklogUpdateToOneWithWhereWithoutScrumSpacesInput = {
+export type BacklogUpdateToOneWithWhereWithoutScrumProjectsInput = {
   where?: Prisma.BacklogWhereInput
-  data: Prisma.XOR<Prisma.BacklogUpdateWithoutScrumSpacesInput, Prisma.BacklogUncheckedUpdateWithoutScrumSpacesInput>
+  data: Prisma.XOR<Prisma.BacklogUpdateWithoutScrumProjectsInput, Prisma.BacklogUncheckedUpdateWithoutScrumProjectsInput>
 }
 
-export type BacklogUpdateWithoutScrumSpacesInput = {
+export type BacklogUpdateWithoutScrumProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -378,7 +378,7 @@ export type BacklogUpdateWithoutScrumSpacesInput = {
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutBacklogNestedInput
 }
 
-export type BacklogUncheckedUpdateWithoutScrumSpacesInput = {
+export type BacklogUncheckedUpdateWithoutScrumProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -390,7 +390,7 @@ export type BacklogCreateWithoutScrumEpicsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  scrumSpaces?: Prisma.ScrumSpaceCreateNestedManyWithoutBacklogInput
+  ScrumProjects?: Prisma.ScrumProjectCreateNestedManyWithoutBacklogInput
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutBacklogInput
 }
 
@@ -398,7 +398,7 @@ export type BacklogUncheckedCreateWithoutScrumEpicsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUncheckedCreateNestedManyWithoutBacklogInput
+  ScrumProjects?: Prisma.ScrumProjectUncheckedCreateNestedManyWithoutBacklogInput
   scrumTasks?: Prisma.ScrumTaskUncheckedCreateNestedManyWithoutBacklogInput
 }
 
@@ -422,7 +422,7 @@ export type BacklogUpdateWithoutScrumEpicsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUpdateManyWithoutBacklogNestedInput
+  ScrumProjects?: Prisma.ScrumProjectUpdateManyWithoutBacklogNestedInput
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutBacklogNestedInput
 }
 
@@ -430,7 +430,7 @@ export type BacklogUncheckedUpdateWithoutScrumEpicsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUncheckedUpdateManyWithoutBacklogNestedInput
+  ScrumProjects?: Prisma.ScrumProjectUncheckedUpdateManyWithoutBacklogNestedInput
   scrumTasks?: Prisma.ScrumTaskUncheckedUpdateManyWithoutBacklogNestedInput
 }
 
@@ -438,7 +438,7 @@ export type BacklogCreateWithoutScrumTasksInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  scrumSpaces?: Prisma.ScrumSpaceCreateNestedManyWithoutBacklogInput
+  ScrumProjects?: Prisma.ScrumProjectCreateNestedManyWithoutBacklogInput
   scrumEpics?: Prisma.ScrumEpicCreateNestedManyWithoutBacklogInput
 }
 
@@ -446,7 +446,7 @@ export type BacklogUncheckedCreateWithoutScrumTasksInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUncheckedCreateNestedManyWithoutBacklogInput
+  ScrumProjects?: Prisma.ScrumProjectUncheckedCreateNestedManyWithoutBacklogInput
   scrumEpics?: Prisma.ScrumEpicUncheckedCreateNestedManyWithoutBacklogInput
 }
 
@@ -470,7 +470,7 @@ export type BacklogUpdateWithoutScrumTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUpdateManyWithoutBacklogNestedInput
+  ScrumProjects?: Prisma.ScrumProjectUpdateManyWithoutBacklogNestedInput
   scrumEpics?: Prisma.ScrumEpicUpdateManyWithoutBacklogNestedInput
 }
 
@@ -478,7 +478,7 @@ export type BacklogUncheckedUpdateWithoutScrumTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  scrumSpaces?: Prisma.ScrumSpaceUncheckedUpdateManyWithoutBacklogNestedInput
+  ScrumProjects?: Prisma.ScrumProjectUncheckedUpdateManyWithoutBacklogNestedInput
   scrumEpics?: Prisma.ScrumEpicUncheckedUpdateManyWithoutBacklogNestedInput
 }
 
@@ -488,13 +488,13 @@ export type BacklogUncheckedUpdateWithoutScrumTasksInput = {
  */
 
 export type BacklogCountOutputType = {
-  scrumSpaces: number
+  ScrumProjects: number
   scrumTasks: number
   scrumEpics: number
 }
 
 export type BacklogCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scrumSpaces?: boolean | BacklogCountOutputTypeCountScrumSpacesArgs
+  ScrumProjects?: boolean | BacklogCountOutputTypeCountScrumProjectsArgs
   scrumTasks?: boolean | BacklogCountOutputTypeCountScrumTasksArgs
   scrumEpics?: boolean | BacklogCountOutputTypeCountScrumEpicsArgs
 }
@@ -512,8 +512,8 @@ export type BacklogCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * BacklogCountOutputType without action
  */
-export type BacklogCountOutputTypeCountScrumSpacesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ScrumSpaceWhereInput
+export type BacklogCountOutputTypeCountScrumProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ScrumProjectWhereInput
 }
 
 /**
@@ -535,7 +535,7 @@ export type BacklogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  scrumSpaces?: boolean | Prisma.Backlog$scrumSpacesArgs<ExtArgs>
+  ScrumProjects?: boolean | Prisma.Backlog$ScrumProjectsArgs<ExtArgs>
   scrumTasks?: boolean | Prisma.Backlog$scrumTasksArgs<ExtArgs>
   scrumEpics?: boolean | Prisma.Backlog$scrumEpicsArgs<ExtArgs>
   _count?: boolean | Prisma.BacklogCountOutputTypeDefaultArgs<ExtArgs>
@@ -561,7 +561,7 @@ export type BacklogSelectScalar = {
 
 export type BacklogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt", ExtArgs["result"]["backlog"]>
 export type BacklogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  scrumSpaces?: boolean | Prisma.Backlog$scrumSpacesArgs<ExtArgs>
+  ScrumProjects?: boolean | Prisma.Backlog$ScrumProjectsArgs<ExtArgs>
   scrumTasks?: boolean | Prisma.Backlog$scrumTasksArgs<ExtArgs>
   scrumEpics?: boolean | Prisma.Backlog$scrumEpicsArgs<ExtArgs>
   _count?: boolean | Prisma.BacklogCountOutputTypeDefaultArgs<ExtArgs>
@@ -572,7 +572,7 @@ export type BacklogIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $BacklogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Backlog"
   objects: {
-    scrumSpaces: Prisma.$ScrumSpacePayload<ExtArgs>[]
+    ScrumProjects: Prisma.$ScrumProjectPayload<ExtArgs>[]
     scrumTasks: Prisma.$ScrumTaskPayload<ExtArgs>[]
     scrumEpics: Prisma.$ScrumEpicPayload<ExtArgs>[]
   }
@@ -974,7 +974,7 @@ readonly fields: BacklogFieldRefs;
  */
 export interface Prisma__BacklogClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  scrumSpaces<T extends Prisma.Backlog$scrumSpacesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Backlog$scrumSpacesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumSpacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ScrumProjects<T extends Prisma.Backlog$ScrumProjectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Backlog$ScrumProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   scrumTasks<T extends Prisma.Backlog$scrumTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Backlog$scrumTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   scrumEpics<T extends Prisma.Backlog$scrumEpicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Backlog$scrumEpicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumEpicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1397,27 +1397,27 @@ export type BacklogDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Backlog.scrumSpaces
+ * Backlog.ScrumProjects
  */
-export type Backlog$scrumSpacesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Backlog$ScrumProjectsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ScrumSpace
+   * Select specific fields to fetch from the ScrumProject
    */
-  select?: Prisma.ScrumSpaceSelect<ExtArgs> | null
+  select?: Prisma.ScrumProjectSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ScrumSpace
+   * Omit specific fields from the ScrumProject
    */
-  omit?: Prisma.ScrumSpaceOmit<ExtArgs> | null
+  omit?: Prisma.ScrumProjectOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ScrumSpaceInclude<ExtArgs> | null
-  where?: Prisma.ScrumSpaceWhereInput
-  orderBy?: Prisma.ScrumSpaceOrderByWithRelationInput | Prisma.ScrumSpaceOrderByWithRelationInput[]
-  cursor?: Prisma.ScrumSpaceWhereUniqueInput
+  include?: Prisma.ScrumProjectInclude<ExtArgs> | null
+  where?: Prisma.ScrumProjectWhereInput
+  orderBy?: Prisma.ScrumProjectOrderByWithRelationInput | Prisma.ScrumProjectOrderByWithRelationInput[]
+  cursor?: Prisma.ScrumProjectWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ScrumSpaceScalarFieldEnum | Prisma.ScrumSpaceScalarFieldEnum[]
+  distinct?: Prisma.ScrumProjectScalarFieldEnum | Prisma.ScrumProjectScalarFieldEnum[]
 }
 
 /**

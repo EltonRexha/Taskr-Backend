@@ -55,12 +55,12 @@ export const ModelName = {
   Notification: 'Notification',
   Backlog: 'Backlog',
   Epic: 'Epic',
-  ScrumSpace: 'ScrumSpace',
+  ScrumProject: 'ScrumProject',
   Sprint: 'Sprint',
   DraftSprint: 'DraftSprint',
   ScrumEpic: 'ScrumEpic',
-  Space: 'Space',
-  SpaceMember: 'SpaceMember',
+  Project: 'Project',
+  ProjectMember: 'ProjectMember',
   Task: 'Task',
   ScrumTask: 'ScrumTask'
 } as const
@@ -130,14 +130,14 @@ export const EpicScalarFieldEnum = {
 export type EpicScalarFieldEnum = (typeof EpicScalarFieldEnum)[keyof typeof EpicScalarFieldEnum]
 
 
-export const ScrumSpaceScalarFieldEnum = {
+export const ScrumProjectScalarFieldEnum = {
   id: 'id',
   backlogId: 'backlogId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type ScrumSpaceScalarFieldEnum = (typeof ScrumSpaceScalarFieldEnum)[keyof typeof ScrumSpaceScalarFieldEnum]
+export type ScrumProjectScalarFieldEnum = (typeof ScrumProjectScalarFieldEnum)[keyof typeof ScrumProjectScalarFieldEnum]
 
 
 export const SprintScalarFieldEnum = {
@@ -149,7 +149,7 @@ export const SprintScalarFieldEnum = {
   sprintStatus: 'sprintStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  scrumSpaceId: 'scrumSpaceId'
+  ScrumProjectId: 'ScrumProjectId'
 } as const
 
 export type SprintScalarFieldEnum = (typeof SprintScalarFieldEnum)[keyof typeof SprintScalarFieldEnum]
@@ -158,7 +158,7 @@ export type SprintScalarFieldEnum = (typeof SprintScalarFieldEnum)[keyof typeof 
 export const DraftSprintScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  scrumSpaceId: 'scrumSpaceId',
+  ScrumProjectId: 'ScrumProjectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -179,33 +179,35 @@ export const ScrumEpicScalarFieldEnum = {
 export type ScrumEpicScalarFieldEnum = (typeof ScrumEpicScalarFieldEnum)[keyof typeof ScrumEpicScalarFieldEnum]
 
 
-export const SpaceScalarFieldEnum = {
+export const ProjectScalarFieldEnum = {
   id: 'id',
-  scrumSpaceId: 'scrumSpaceId',
-  spaceType: 'spaceType',
+  name: 'name',
+  ScrumProjectId: 'ScrumProjectId',
+  ProjectType: 'ProjectType',
   userClerkId: 'userClerkId',
   starred: 'starred',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type SpaceScalarFieldEnum = (typeof SpaceScalarFieldEnum)[keyof typeof SpaceScalarFieldEnum]
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
 
 
-export const SpaceMemberScalarFieldEnum = {
+export const ProjectMemberScalarFieldEnum = {
   id: 'id',
   userClerkId: 'userClerkId',
   role: 'role',
-  spaceId: 'spaceId',
+  ProjectId: 'ProjectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type SpaceMemberScalarFieldEnum = (typeof SpaceMemberScalarFieldEnum)[keyof typeof SpaceMemberScalarFieldEnum]
+export type ProjectMemberScalarFieldEnum = (typeof ProjectMemberScalarFieldEnum)[keyof typeof ProjectMemberScalarFieldEnum]
 
 
 export const TaskScalarFieldEnum = {
   id: 'id',
+  tag_id: 'tag_id',
   userClerkId: 'userClerkId',
   startDate: 'startDate',
   dueDate: 'dueDate',

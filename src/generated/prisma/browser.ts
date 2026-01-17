@@ -38,10 +38,10 @@ export type Backlog = Prisma.BacklogModel
  */
 export type Epic = Prisma.EpicModel
 /**
- * Model ScrumSpace
+ * Model ScrumProject
  * 
  */
-export type ScrumSpace = Prisma.ScrumSpaceModel
+export type ScrumProject = Prisma.ScrumProjectModel
 /**
  * Model Sprint
  * 
@@ -58,15 +58,15 @@ export type DraftSprint = Prisma.DraftSprintModel
  */
 export type ScrumEpic = Prisma.ScrumEpicModel
 /**
- * Model Space
+ * Model Project
  * 
  */
-export type Space = Prisma.SpaceModel
+export type Project = Prisma.ProjectModel
 /**
- * Model SpaceMember
+ * Model ProjectMember
  * 
  */
-export type SpaceMember = Prisma.SpaceMemberModel
+export type ProjectMember = Prisma.ProjectMemberModel
 /**
  * Model Task
  * 

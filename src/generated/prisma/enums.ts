@@ -9,29 +9,40 @@
 * 🟢 You can import this file directly.
 */
 
+export const TaskUrgency = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type TaskUrgency = (typeof TaskUrgency)[keyof typeof TaskUrgency]
+
+
 export const ScrumTaskStatus = {
   TODO: 'TODO',
   IN_PROGRESS: 'IN_PROGRESS',
+  IN_REVIEW: 'IN_REVIEW',
   DONE: 'DONE'
 } as const
 
 export type ScrumTaskStatus = (typeof ScrumTaskStatus)[keyof typeof ScrumTaskStatus]
 
 
-export const SpaceType = {
+export const ProjectType = {
   SCRUM: 'SCRUM',
   KANBAN: 'KANBAN'
 } as const
 
-export type SpaceType = (typeof SpaceType)[keyof typeof SpaceType]
+export type ProjectType = (typeof ProjectType)[keyof typeof ProjectType]
 
 
-export const SpaceMemberRole = {
+export const ProjectMemberRole = {
   ADMIN: 'ADMIN',
   USER: 'USER'
 } as const
 
-export type SpaceMemberRole = (typeof SpaceMemberRole)[keyof typeof SpaceMemberRole]
+export type ProjectMemberRole = (typeof ProjectMemberRole)[keyof typeof ProjectMemberRole]
 
 
 export const SprintStatus = {

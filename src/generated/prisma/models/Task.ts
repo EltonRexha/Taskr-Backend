@@ -26,6 +26,7 @@ export type AggregateTask = {
 
 export type TaskMinAggregateOutputType = {
   id: string | null
+  tag_id: string | null
   userClerkId: string | null
   startDate: Date | null
   dueDate: Date | null
@@ -35,6 +36,7 @@ export type TaskMinAggregateOutputType = {
 
 export type TaskMaxAggregateOutputType = {
   id: string | null
+  tag_id: string | null
   userClerkId: string | null
   startDate: Date | null
   dueDate: Date | null
@@ -44,6 +46,7 @@ export type TaskMaxAggregateOutputType = {
 
 export type TaskCountAggregateOutputType = {
   id: number
+  tag_id: number
   userClerkId: number
   startDate: number
   dueDate: number
@@ -55,6 +58,7 @@ export type TaskCountAggregateOutputType = {
 
 export type TaskMinAggregateInputType = {
   id?: true
+  tag_id?: true
   userClerkId?: true
   startDate?: true
   dueDate?: true
@@ -64,6 +68,7 @@ export type TaskMinAggregateInputType = {
 
 export type TaskMaxAggregateInputType = {
   id?: true
+  tag_id?: true
   userClerkId?: true
   startDate?: true
   dueDate?: true
@@ -73,6 +78,7 @@ export type TaskMaxAggregateInputType = {
 
 export type TaskCountAggregateInputType = {
   id?: true
+  tag_id?: true
   userClerkId?: true
   startDate?: true
   dueDate?: true
@@ -155,7 +161,8 @@ export type TaskGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type TaskGroupByOutputType = {
   id: string
-  userClerkId: string
+  tag_id: string
+  userClerkId: string | null
   startDate: Date
   dueDate: Date
   createdAt: Date
@@ -185,26 +192,28 @@ export type TaskWhereInput = {
   OR?: Prisma.TaskWhereInput[]
   NOT?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
   id?: Prisma.StringFilter<"Task"> | string
-  userClerkId?: Prisma.StringFilter<"Task"> | string
+  tag_id?: Prisma.StringFilter<"Task"> | string
+  userClerkId?: Prisma.StringNullableFilter<"Task"> | string | null
   startDate?: Prisma.DateTimeFilter<"Task"> | Date | string
   dueDate?: Prisma.DateTimeFilter<"Task"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   scrumTasks?: Prisma.ScrumTaskListRelationFilter
-  AssignedTo?: Prisma.SpaceMemberListRelationFilter
+  AssignedTo?: Prisma.ProjectMemberListRelationFilter
 }
 
 export type TaskOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  userClerkId?: Prisma.SortOrder
+  tag_id?: Prisma.SortOrder
+  userClerkId?: Prisma.SortOrderInput | Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
   scrumTasks?: Prisma.ScrumTaskOrderByRelationAggregateInput
-  AssignedTo?: Prisma.SpaceMemberOrderByRelationAggregateInput
+  AssignedTo?: Prisma.ProjectMemberOrderByRelationAggregateInput
 }
 
 export type TaskWhereUniqueInput = Prisma.AtLeast<{
@@ -212,19 +221,21 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
   OR?: Prisma.TaskWhereInput[]
   NOT?: Prisma.TaskWhereInput | Prisma.TaskWhereInput[]
-  userClerkId?: Prisma.StringFilter<"Task"> | string
+  tag_id?: Prisma.StringFilter<"Task"> | string
+  userClerkId?: Prisma.StringNullableFilter<"Task"> | string | null
   startDate?: Prisma.DateTimeFilter<"Task"> | Date | string
   dueDate?: Prisma.DateTimeFilter<"Task"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   scrumTasks?: Prisma.ScrumTaskListRelationFilter
-  AssignedTo?: Prisma.SpaceMemberListRelationFilter
+  AssignedTo?: Prisma.ProjectMemberListRelationFilter
 }, "id">
 
 export type TaskOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  userClerkId?: Prisma.SortOrder
+  tag_id?: Prisma.SortOrder
+  userClerkId?: Prisma.SortOrderInput | Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -239,7 +250,8 @@ export type TaskScalarWhereWithAggregatesInput = {
   OR?: Prisma.TaskScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TaskScalarWhereWithAggregatesInput | Prisma.TaskScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Task"> | string
-  userClerkId?: Prisma.StringWithAggregatesFilter<"Task"> | string
+  tag_id?: Prisma.StringWithAggregatesFilter<"Task"> | string
+  userClerkId?: Prisma.StringNullableWithAggregatesFilter<"Task"> | string | null
   startDate?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
   dueDate?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
@@ -248,51 +260,56 @@ export type TaskScalarWhereWithAggregatesInput = {
 
 export type TaskCreateInput = {
   id?: string
+  tag_id: string
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  author: Prisma.UserCreateNestedOneWithoutTasksInput
+  author?: Prisma.UserCreateNestedOneWithoutTasksInput
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutTaskInput
-  AssignedTo?: Prisma.SpaceMemberCreateNestedManyWithoutAssignedTasksInput
+  AssignedTo?: Prisma.ProjectMemberCreateNestedManyWithoutAssignedTasksInput
 }
 
 export type TaskUncheckedCreateInput = {
   id?: string
-  userClerkId: string
+  tag_id: string
+  userClerkId?: string | null
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedCreateNestedManyWithoutTaskInput
-  AssignedTo?: Prisma.SpaceMemberUncheckedCreateNestedManyWithoutAssignedTasksInput
+  AssignedTo?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutAssignedTasksInput
 }
 
 export type TaskUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  author?: Prisma.UserUpdateOneRequiredWithoutTasksNestedInput
+  author?: Prisma.UserUpdateOneWithoutTasksNestedInput
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutTaskNestedInput
-  AssignedTo?: Prisma.SpaceMemberUpdateManyWithoutAssignedTasksNestedInput
+  AssignedTo?: Prisma.ProjectMemberUpdateManyWithoutAssignedTasksNestedInput
 }
 
 export type TaskUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userClerkId?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
+  userClerkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedUpdateManyWithoutTaskNestedInput
-  AssignedTo?: Prisma.SpaceMemberUncheckedUpdateManyWithoutAssignedTasksNestedInput
+  AssignedTo?: Prisma.ProjectMemberUncheckedUpdateManyWithoutAssignedTasksNestedInput
 }
 
 export type TaskCreateManyInput = {
   id?: string
-  userClerkId: string
+  tag_id: string
+  userClerkId?: string | null
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
@@ -301,6 +318,7 @@ export type TaskCreateManyInput = {
 
 export type TaskUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -309,7 +327,8 @@ export type TaskUpdateManyMutationInput = {
 
 export type TaskUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userClerkId?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
+  userClerkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -328,6 +347,7 @@ export type TaskOrderByRelationAggregateInput = {
 
 export type TaskCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tag_id?: Prisma.SortOrder
   userClerkId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
@@ -337,6 +357,7 @@ export type TaskCountOrderByAggregateInput = {
 
 export type TaskMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tag_id?: Prisma.SortOrder
   userClerkId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
@@ -346,6 +367,7 @@ export type TaskMaxOrderByAggregateInput = {
 
 export type TaskMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  tag_id?: Prisma.SortOrder
   userClerkId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
@@ -454,22 +476,24 @@ export type TaskUpdateOneRequiredWithoutScrumTasksNestedInput = {
 
 export type TaskCreateWithoutAuthorInput = {
   id?: string
+  tag_id: string
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutTaskInput
-  AssignedTo?: Prisma.SpaceMemberCreateNestedManyWithoutAssignedTasksInput
+  AssignedTo?: Prisma.ProjectMemberCreateNestedManyWithoutAssignedTasksInput
 }
 
 export type TaskUncheckedCreateWithoutAuthorInput = {
   id?: string
+  tag_id: string
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedCreateNestedManyWithoutTaskInput
-  AssignedTo?: Prisma.SpaceMemberUncheckedCreateNestedManyWithoutAssignedTasksInput
+  AssignedTo?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutAssignedTasksInput
 }
 
 export type TaskCreateOrConnectWithoutAuthorInput = {
@@ -503,7 +527,8 @@ export type TaskScalarWhereInput = {
   OR?: Prisma.TaskScalarWhereInput[]
   NOT?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
   id?: Prisma.StringFilter<"Task"> | string
-  userClerkId?: Prisma.StringFilter<"Task"> | string
+  tag_id?: Prisma.StringFilter<"Task"> | string
+  userClerkId?: Prisma.StringNullableFilter<"Task"> | string | null
   startDate?: Prisma.DateTimeFilter<"Task"> | Date | string
   dueDate?: Prisma.DateTimeFilter<"Task"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
@@ -512,17 +537,19 @@ export type TaskScalarWhereInput = {
 
 export type TaskCreateWithoutAssignedToInput = {
   id?: string
+  tag_id: string
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  author: Prisma.UserCreateNestedOneWithoutTasksInput
+  author?: Prisma.UserCreateNestedOneWithoutTasksInput
   scrumTasks?: Prisma.ScrumTaskCreateNestedManyWithoutTaskInput
 }
 
 export type TaskUncheckedCreateWithoutAssignedToInput = {
   id?: string
-  userClerkId: string
+  tag_id: string
+  userClerkId?: string | null
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
@@ -553,22 +580,24 @@ export type TaskUpdateManyWithWhereWithoutAssignedToInput = {
 
 export type TaskCreateWithoutScrumTasksInput = {
   id?: string
+  tag_id: string
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  author: Prisma.UserCreateNestedOneWithoutTasksInput
-  AssignedTo?: Prisma.SpaceMemberCreateNestedManyWithoutAssignedTasksInput
+  author?: Prisma.UserCreateNestedOneWithoutTasksInput
+  AssignedTo?: Prisma.ProjectMemberCreateNestedManyWithoutAssignedTasksInput
 }
 
 export type TaskUncheckedCreateWithoutScrumTasksInput = {
   id?: string
-  userClerkId: string
+  tag_id: string
+  userClerkId?: string | null
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
   updatedAt: Date | string
-  AssignedTo?: Prisma.SpaceMemberUncheckedCreateNestedManyWithoutAssignedTasksInput
+  AssignedTo?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutAssignedTasksInput
 }
 
 export type TaskCreateOrConnectWithoutScrumTasksInput = {
@@ -589,26 +618,29 @@ export type TaskUpdateToOneWithWhereWithoutScrumTasksInput = {
 
 export type TaskUpdateWithoutScrumTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  author?: Prisma.UserUpdateOneRequiredWithoutTasksNestedInput
-  AssignedTo?: Prisma.SpaceMemberUpdateManyWithoutAssignedTasksNestedInput
+  author?: Prisma.UserUpdateOneWithoutTasksNestedInput
+  AssignedTo?: Prisma.ProjectMemberUpdateManyWithoutAssignedTasksNestedInput
 }
 
 export type TaskUncheckedUpdateWithoutScrumTasksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userClerkId?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
+  userClerkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  AssignedTo?: Prisma.SpaceMemberUncheckedUpdateManyWithoutAssignedTasksNestedInput
+  AssignedTo?: Prisma.ProjectMemberUncheckedUpdateManyWithoutAssignedTasksNestedInput
 }
 
 export type TaskCreateManyAuthorInput = {
   id?: string
+  tag_id: string
   startDate: Date | string
   dueDate: Date | string
   createdAt: Date | string
@@ -617,26 +649,29 @@ export type TaskCreateManyAuthorInput = {
 
 export type TaskUpdateWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutTaskNestedInput
-  AssignedTo?: Prisma.SpaceMemberUpdateManyWithoutAssignedTasksNestedInput
+  AssignedTo?: Prisma.ProjectMemberUpdateManyWithoutAssignedTasksNestedInput
 }
 
 export type TaskUncheckedUpdateWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scrumTasks?: Prisma.ScrumTaskUncheckedUpdateManyWithoutTaskNestedInput
-  AssignedTo?: Prisma.SpaceMemberUncheckedUpdateManyWithoutAssignedTasksNestedInput
+  AssignedTo?: Prisma.ProjectMemberUncheckedUpdateManyWithoutAssignedTasksNestedInput
 }
 
 export type TaskUncheckedUpdateManyWithoutAuthorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -645,17 +680,19 @@ export type TaskUncheckedUpdateManyWithoutAuthorInput = {
 
 export type TaskUpdateWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  author?: Prisma.UserUpdateOneRequiredWithoutTasksNestedInput
+  author?: Prisma.UserUpdateOneWithoutTasksNestedInput
   scrumTasks?: Prisma.ScrumTaskUpdateManyWithoutTaskNestedInput
 }
 
 export type TaskUncheckedUpdateWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userClerkId?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
+  userClerkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -665,7 +702,8 @@ export type TaskUncheckedUpdateWithoutAssignedToInput = {
 
 export type TaskUncheckedUpdateManyWithoutAssignedToInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  userClerkId?: Prisma.StringFieldUpdateOperationsInput | string
+  tag_id?: Prisma.StringFieldUpdateOperationsInput | string
+  userClerkId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -708,18 +746,19 @@ export type TaskCountOutputTypeCountScrumTasksArgs<ExtArgs extends runtime.Types
  * TaskCountOutputType without action
  */
 export type TaskCountOutputTypeCountAssignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SpaceMemberWhereInput
+  where?: Prisma.ProjectMemberWhereInput
 }
 
 
 export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tag_id?: boolean
   userClerkId?: boolean
   startDate?: boolean
   dueDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.Task$authorArgs<ExtArgs>
   scrumTasks?: boolean | Prisma.Task$scrumTasksArgs<ExtArgs>
   AssignedTo?: boolean | Prisma.Task$AssignedToArgs<ExtArgs>
   _count?: boolean | Prisma.TaskCountOutputTypeDefaultArgs<ExtArgs>
@@ -727,26 +766,29 @@ export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type TaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tag_id?: boolean
   userClerkId?: boolean
   startDate?: boolean
   dueDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.Task$authorArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
 export type TaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  tag_id?: boolean
   userClerkId?: boolean
   startDate?: boolean
   dueDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.Task$authorArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
 export type TaskSelectScalar = {
   id?: boolean
+  tag_id?: boolean
   userClerkId?: boolean
   startDate?: boolean
   dueDate?: boolean
@@ -754,30 +796,31 @@ export type TaskSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userClerkId" | "startDate" | "dueDate" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tag_id" | "userClerkId" | "startDate" | "dueDate" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
 export type TaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.Task$authorArgs<ExtArgs>
   scrumTasks?: boolean | Prisma.Task$scrumTasksArgs<ExtArgs>
   AssignedTo?: boolean | Prisma.Task$AssignedToArgs<ExtArgs>
   _count?: boolean | Prisma.TaskCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.Task$authorArgs<ExtArgs>
 }
 export type TaskIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  author?: boolean | Prisma.Task$authorArgs<ExtArgs>
 }
 
 export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Task"
   objects: {
-    author: Prisma.$UserPayload<ExtArgs>
+    author: Prisma.$UserPayload<ExtArgs> | null
     scrumTasks: Prisma.$ScrumTaskPayload<ExtArgs>[]
-    AssignedTo: Prisma.$SpaceMemberPayload<ExtArgs>[]
+    AssignedTo: Prisma.$ProjectMemberPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    userClerkId: string
+    tag_id: string
+    userClerkId: string | null
     startDate: Date
     dueDate: Date
     createdAt: Date
@@ -1176,9 +1219,9 @@ readonly fields: TaskFieldRefs;
  */
 export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  author<T extends Prisma.Task$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$authorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   scrumTasks<T extends Prisma.Task$scrumTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$scrumTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScrumTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  AssignedTo<T extends Prisma.Task$AssignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$AssignedToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SpaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  AssignedTo<T extends Prisma.Task$AssignedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$AssignedToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1209,6 +1252,7 @@ export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface TaskFieldRefs {
   readonly id: Prisma.FieldRef<"Task", 'String'>
+  readonly tag_id: Prisma.FieldRef<"Task", 'String'>
   readonly userClerkId: Prisma.FieldRef<"Task", 'String'>
   readonly startDate: Prisma.FieldRef<"Task", 'DateTime'>
   readonly dueDate: Prisma.FieldRef<"Task", 'DateTime'>
@@ -1610,6 +1654,25 @@ export type TaskDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Task.author
+ */
+export type Task$authorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * Task.scrumTasks
  */
 export type Task$scrumTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1638,23 +1701,23 @@ export type Task$scrumTasksArgs<ExtArgs extends runtime.Types.Extensions.Interna
  */
 export type Task$AssignedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the SpaceMember
+   * Select specific fields to fetch from the ProjectMember
    */
-  select?: Prisma.SpaceMemberSelect<ExtArgs> | null
+  select?: Prisma.ProjectMemberSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the SpaceMember
+   * Omit specific fields from the ProjectMember
    */
-  omit?: Prisma.SpaceMemberOmit<ExtArgs> | null
+  omit?: Prisma.ProjectMemberOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.SpaceMemberInclude<ExtArgs> | null
-  where?: Prisma.SpaceMemberWhereInput
-  orderBy?: Prisma.SpaceMemberOrderByWithRelationInput | Prisma.SpaceMemberOrderByWithRelationInput[]
-  cursor?: Prisma.SpaceMemberWhereUniqueInput
+  include?: Prisma.ProjectMemberInclude<ExtArgs> | null
+  where?: Prisma.ProjectMemberWhereInput
+  orderBy?: Prisma.ProjectMemberOrderByWithRelationInput | Prisma.ProjectMemberOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectMemberWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.SpaceMemberScalarFieldEnum | Prisma.SpaceMemberScalarFieldEnum[]
+  distinct?: Prisma.ProjectMemberScalarFieldEnum | Prisma.ProjectMemberScalarFieldEnum[]
 }
 
 /**
