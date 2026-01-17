@@ -129,6 +129,7 @@ model ScrumEpic {
 
 model Project {
   id             String          @id @default(uuid())
+  name           String
   ScrumProject   ScrumProject    @relation(fields: [ScrumProjectId], references: [id])
   ScrumProjectId String          @map("scrum_Project_id")
   ProjectType    ProjectType     @map("Project_type")
