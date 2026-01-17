@@ -34,9 +34,10 @@ export class ProjectsController {
       paginationDto,
     );
     return {
-      data: projects.map((project) => ({
+      projects: projects.map((project) => ({
         id: project.id,
         name: project.name,
+        projectType: project.ProjectType,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
       })),
