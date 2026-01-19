@@ -15,7 +15,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { UseGuards } from '@nestjs/common';
 import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 import type { Request } from 'express';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { ProjectQueryDto } from './dto/project.query.dto';
 
 @UseGuards(ClerkAuthGuard)
 @Controller('projects')
@@ -28,11 +28,8 @@ export class ProjectsController {
   }
 
   @Get()
-  async findAll(@Req() req: Request, @Query() paginationDto: PaginationDto) {
-    const projects = await this.projectsService.findAll(
-      req.clerkUser,
-      paginationDto,
-    );
+  async findAll(@Req() req: Request, @Query() query: ProjectQueryDto) {
+    const projects = await this.projectsService.findAll(req.clerkUser, query);
     return {
       projects: projects.map((project) => ({
         id: project.id,

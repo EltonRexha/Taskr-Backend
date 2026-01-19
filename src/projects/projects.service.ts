@@ -3,8 +3,8 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from '@clerk/backend';
 import { DatabaseService } from 'src/database/database.service';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedService } from 'src/common/services/pagination.service';
+import { ProjectQueryDto } from './dto/project.query.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -17,12 +17,24 @@ export class ProjectsService {
     return 'This action adds a new project';
   }
 
-  async findAll(clerkUser: User, paginationDto: PaginationDto) {
-    const { skip, take } = this.paginationService.getPagination(paginationDto);
+  async findAll(clerkUser: User, projectQueryDto: ProjectQueryDto) {
+    const { skip, take } =
+      this.paginationService.getPagination(projectQueryDto);
+
+    const { project_name: projectName } = projectQueryDto;
+    console.log({ projectName });
 
     try {
       const projects = await this.prisma.project.findMany({
-        where: { userClerkId: clerkUser.id },
+        where: {
+          userClerkId: clerkUser.id,
+          ...(projectName && {
+            name: {
+              contains: projectName,
+              mode: 'insensitive',
+            },
+          }),
+        },
         skip,
         take,
       });
