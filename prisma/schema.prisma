@@ -163,6 +163,7 @@ model Task {
   id          String          @id @default(uuid())
   author      User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
   userClerkId String?         @map("user_clerk_id")
+  description String
   labels      TaskLabel
   priority    TaskUrgency
   startDate   DateTime        @map("start_date")

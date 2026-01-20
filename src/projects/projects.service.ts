@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@clerk/backend';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
-import { ProjectQueryDto } from './dto/project.query.dto';
+import { ProjectQueryDto } from './dto/query-projects.dto';
 
 @Injectable()
 export class ProjectsService {

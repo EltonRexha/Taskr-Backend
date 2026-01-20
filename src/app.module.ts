@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { ClerkModule } from './clerk/clerk.module';
 import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProjectsModule } from './projects/projects.module';
     WebhooksModule,
     ClerkModule,
     ProjectsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],

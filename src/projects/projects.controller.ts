@@ -13,7 +13,7 @@ import { ProjectsService } from './projects.service';
 import { UseGuards } from '@nestjs/common';
 import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 import type { Request } from 'express';
-import { ProjectQueryDto } from './dto/project.query.dto';
+import { ProjectQueryDto } from './dto/query-projects.dto';
 
 @UseGuards(ClerkAuthGuard)
 @Controller('projects')
