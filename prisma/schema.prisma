@@ -79,7 +79,7 @@ model ScrumProject {
   sprints      Sprint[]
   Projects     Project[]
 
-  @@map("scrum_Projects")
+  @@map("scrum_projects")
 }
 
 model Sprint {
@@ -161,9 +161,10 @@ model ProjectMember {
 
 model Task {
   id          String          @id @default(uuid())
-  tag_id      String
   author      User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
   userClerkId String?         @map("user_clerk_id")
+  labels      TaskLabel
+  priority    TaskUrgency
   startDate   DateTime        @map("start_date")
   dueDate     DateTime        @map("due_date")
   createdAt   DateTime        @map("created_at")
@@ -191,6 +192,16 @@ model ScrumTask {
   updatedAt     DateTime        @map("updated_at")
 
   @@map("scrum_task")
+}
+
+enum TaskLabel {
+  bug
+  feature
+  task
+  refactor
+  chore
+  spike
+  techDebt
 }
 
 enum TaskUrgency {

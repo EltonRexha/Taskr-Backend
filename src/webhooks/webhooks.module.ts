@@ -8,4 +8,4 @@ import { ClerkModule } from 'src/clerk/clerk.module';
   controllers: [WebhooksController],
   providers: [WebhooksService],
 })
-export class WebhooksModule { }
+export class WebhooksModule {}
