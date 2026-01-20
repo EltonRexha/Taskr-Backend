@@ -29,13 +29,14 @@ export class ProjectsController {
   async findAll(@Req() req: Request, @Query() query: ProjectQueryDto) {
     const projects = await this.projectsService.findAll(req.clerkUser, query);
     return {
-      projects: projects.map((project) => ({
+      projects: projects.data.map((project) => ({
         id: project.id,
         name: project.name,
         projectType: project.ProjectType,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
       })),
+      meta: projects.meta,
     };
   }
 

@@ -4,9 +4,17 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 export class TaskQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
-  taskDescription?: string;
+  description?: string;
 
   @IsOptional()
   @IsString()
   projectName?: string;
+
+  @IsOptional()
+  @IsString()
+  label?: string;
+
+  @IsOptional()
+  @IsString()
+  priority?: string;
 }

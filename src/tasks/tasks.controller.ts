@@ -6,9 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { TaskQueryDto } from './dto/query-tasks.dto';
+import type { Request } from 'express';
+import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 
+@UseGuards(ClerkAuthGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -19,8 +26,20 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  async findAll(@Req() req: Request, @Query() query: TaskQueryDto) {
+    const tasks = await this.tasksService.findAll(req.clerkUser, query);
+
+    return {
+      tasks: tasks.data.map((data) => ({
+        id: data.id,
+        description: data.description,
+        label: data.label,
+        priority: data.priority,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+      })),
+      meta: tasks.meta,
+    };
   }
 
   @Get(':id')

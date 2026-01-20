@@ -21,25 +21,23 @@ export class ProjectsService {
 
     const { project_name: projectName } = projectQueryDto;
 
-    try {
-      const projects = await this.prisma.project.findMany({
-        where: {
-          userClerkId: clerkUser.id,
-          ...(projectName && {
-            name: {
-              contains: projectName,
-              mode: 'insensitive',
-            },
-          }),
-        },
-        skip,
-        take,
-      });
-      return projects;
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(`Failed to fetch projects: ${message}`);
-    }
+    const projects = await this.prisma.project.findMany({
+      where: {
+        userClerkId: clerkUser.id,
+        ...(projectName && {
+          name: {
+            contains: projectName,
+            mode: 'insensitive',
+          },
+        }),
+      },
+      skip,
+      take,
+    });
+    return {
+      data: projects,
+      meta: this.paginationService.getMeta(projects.length, skip, take),
+    };
   }
 
   findOne(id: number) {

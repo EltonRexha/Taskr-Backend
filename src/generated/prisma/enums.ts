@@ -10,13 +10,13 @@
 */
 
 export const TaskLabel = {
-  bug: 'bug',
-  feature: 'feature',
-  task: 'task',
-  refactor: 'refactor',
-  chore: 'chore',
-  spike: 'spike',
-  techDebt: 'techDebt'
+  BUG: 'BUG',
+  FEATURE: 'FEATURE',
+  TASK: 'TASK',
+  REFACTOR: 'REFACTOR',
+  CHORE: 'CHORE',
+  SPIKE: 'SPIKE',
+  TECH_DEBT: 'TECH_DEBT'
 } as const
 
 export type TaskLabel = (typeof TaskLabel)[keyof typeof TaskLabel]

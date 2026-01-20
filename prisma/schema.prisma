@@ -139,6 +139,7 @@ model Project {
   createdAt      DateTime        @map("created_at")
   updatedAt      DateTime        @map("updated_at")
   ProjectMembers ProjectMember[]
+  tasks          Task[]
 
   @@map("Project")
 }
@@ -164,8 +165,10 @@ model Task {
   author      User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
   userClerkId String?         @map("user_clerk_id")
   description String
-  labels      TaskLabel
+  label       TaskLabel
   priority    TaskUrgency
+  Project     Project         @relation(fields: [ProjectId], references: [id])
+  ProjectId   String          @map("project_id")
   startDate   DateTime        @map("start_date")
   dueDate     DateTime        @map("due_date")
   createdAt   DateTime        @map("created_at")
@@ -196,13 +199,13 @@ model ScrumTask {
 }
 
 enum TaskLabel {
-  bug
-  feature
-  task
-  refactor
-  chore
-  spike
-  techDebt
+  BUG
+  FEATURE
+  TASK
+  REFACTOR
+  CHORE
+  SPIKE
+  TECH_DEBT
 }
 
 enum TaskUrgency {
