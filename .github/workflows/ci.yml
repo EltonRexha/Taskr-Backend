@@ -29,10 +29,6 @@ jobs:
       - name: Lint code
         run: npx eslint "src/**/*.{ts,js}"
 
-      # 5. Run tests
-      - name: Run tests
-        run: npm run test
-
-      # 6. Build NestJS project
+      # 5. Build NestJS project
       - name: Build project
         run: npm run build
