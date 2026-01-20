@@ -22,7 +22,6 @@ export class ProjectsService {
       this.paginationService.getPagination(projectQueryDto);
 
     const { project_name: projectName } = projectQueryDto;
-    console.log({ projectName });
 
     try {
       const projects = await this.prisma.project.findMany({
