@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
 import { User } from '@clerk/backend';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
@@ -13,7 +11,7 @@ export class ProjectsService {
     private readonly paginationService: PaginatedService,
   ) {}
 
-  create(createProjectDto: CreateProjectDto) {
+  create() {
     return 'This action adds a new project';
   }
 
@@ -48,7 +46,7 @@ export class ProjectsService {
     return `This action returns a #${id} project`;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
+  update(id: number) {
     return `This action updates a #${id} project`;
   }
 
