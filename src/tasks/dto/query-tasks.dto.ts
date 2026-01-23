@@ -17,4 +17,8 @@ export class TaskQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   priority?: string;
+
+  @IsOptional()
+  @IsString()
+  projectId?: string;
 }

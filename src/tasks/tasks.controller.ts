@@ -35,6 +35,12 @@ export class TasksController {
         description: data.description,
         label: data.label,
         priority: data.priority,
+        dueDate: data.dueDate,
+        project: {
+          id: data.Project.id,
+          name: data.Project.name,
+        },
+        startDate: data.startDate,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       })),

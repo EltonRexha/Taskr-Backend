@@ -30,7 +30,8 @@ export class TasksService {
 
   async findAll(clerkUser: User, taskQueryDto: TaskQueryDto) {
     const { skip, take } = this.paginationService.getPagination(taskQueryDto);
-    const { description, projectName, label, priority } = taskQueryDto;
+    const { description, projectName, label, priority, projectId } =
+      taskQueryDto;
 
     // Validate and normalize label
     const taskLabel = this.findEnumValue(TASK_LABELS, label);
@@ -52,6 +53,7 @@ export class TasksService {
         label: taskLabel,
         priority: taskPriority,
         Project: {
+          id: projectId,
           name: projectName
             ? { contains: projectName, mode: 'insensitive' }
             : undefined,
@@ -61,6 +63,9 @@ export class TasksService {
             },
           },
         },
+      },
+      include: {
+        Project: true,
       },
       skip,
       take,
