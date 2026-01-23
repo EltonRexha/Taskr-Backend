@@ -3,7 +3,7 @@ import { TaskQueryDto } from './dto/query-tasks.dto';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { User } from '@clerk/backend';
 import { DatabaseService } from 'src/database/database.service';
-import { TaskLabel, TaskUrgency } from 'src/generated/prisma/enums';
+import { TaskLabel, TaskUrgency } from 'generated/prisma/enums';
 
 const TASK_LABELS: TaskLabel[] = [
   'BUG',
