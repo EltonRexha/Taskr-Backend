@@ -27,7 +27,7 @@ export class ProjectsController {
 
   @Get()
   async findAll(@Req() req: Request, @Query() query: ProjectQueryDto) {
-    const projects = await this.projectsService.findAll(req.clerkUser, query);
+    const projects = await this.projectsService.findAll(req.user, query);
     return {
       projects: projects.data.map((project) => ({
         id: project.id,

@@ -59,8 +59,8 @@ model Epic {
   id          String          @id @default(uuid())
   description String
   color       EpicColor       @map("epic_color")
-  startDate   DateTime        @map("start_date")
-  dueDate     DateTime        @map("due_date")
+  startDate   DateTime        @map("start_date") @db.Date
+  dueDate     DateTime        @map("due_date") @db.Date
   createdAt   DateTime        @map("created_at")
   updatedAt   DateTime        @map("updated_at")
   assignedTo  ProjectMember[]
@@ -85,8 +85,8 @@ model ScrumProject {
 model Sprint {
   id             String       @id @default(uuid())
   title          String
-  startDate      DateTime     @map("start_date")
-  dueDate        DateTime     @map("due_date")
+  startDate      DateTime     @map("start_date") @db.Date
+  dueDate        DateTime     @map("due_date") @db.Date
   description    String
   sprintStatus   SprintStatus @default(DUE)
   createdAt      DateTime     @map("created_at")
@@ -141,7 +141,7 @@ model Project {
   ProjectMembers ProjectMember[]
   tasks          Task[]
 
-  @@map("Project")
+  @@map("projects")
 }
 
 model ProjectMember {
@@ -157,7 +157,7 @@ model ProjectMember {
   AssignedTasks Task[]
   AssignedEpics Epic[]
 
-  @@map("Project_members")
+  @@map("project_members")
 }
 
 model Task {
@@ -169,8 +169,8 @@ model Task {
   priority    TaskUrgency
   Project     Project         @relation(fields: [ProjectId], references: [id])
   ProjectId   String          @map("project_id")
-  startDate   DateTime        @map("start_date")
-  dueDate     DateTime        @map("due_date")
+  startDate   DateTime        @map("start_date") @db.Date
+  dueDate     DateTime        @map("due_date") @db.Date
   createdAt   DateTime        @map("created_at")
   updatedAt   DateTime        @map("updated_at")
   scrumTasks  ScrumTask[]
@@ -195,7 +195,7 @@ model ScrumTask {
   createdAt     DateTime        @map("created_at")
   updatedAt     DateTime        @map("updated_at")
 
-  @@map("scrum_task")
+  @@map("scrum_tasks")
 }
 
 enum TaskLabel {

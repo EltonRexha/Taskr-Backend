@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@clerk/backend';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { ProjectQueryDto } from './dto/query-projects.dto';
+import { User } from 'src/generated/prisma/client';
 
 @Injectable()
 export class ProjectsService {
@@ -15,7 +15,7 @@ export class ProjectsService {
     return 'This action adds a new project';
   }
 
-  async findAll(clerkUser: User, projectQueryDto: ProjectQueryDto) {
+  async findAll(user: User, projectQueryDto: ProjectQueryDto) {
     const { skip, take } =
       this.paginationService.getPagination(projectQueryDto);
 
@@ -23,7 +23,7 @@ export class ProjectsService {
 
     const projects = await this.prisma.project.findMany({
       where: {
-        userClerkId: clerkUser.id,
+        userClerkId: user.clerkId,
         ...(projectName && {
           name: {
             contains: projectName,

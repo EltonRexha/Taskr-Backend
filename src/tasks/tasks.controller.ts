@@ -27,7 +27,7 @@ export class TasksController {
 
   @Get()
   async findAll(@Req() req: Request, @Query() query: TaskQueryDto) {
-    const tasks = await this.tasksService.findAll(req.clerkUser, query);
+    const tasks = await this.tasksService.findAll(req.user, query);
 
     return {
       tasks: tasks.data.map((data) => ({

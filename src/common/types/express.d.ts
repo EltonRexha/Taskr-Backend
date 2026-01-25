@@ -1,9 +1,9 @@
-import { User } from '@clerk/backend';
+import { User } from 'src/generated/prisma/client';
 
 declare global {
   namespace Express {
     interface Request {
-      clerkUser: User;
+      user: User;
     }
   }
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { TaskQueryDto } from './dto/query-tasks.dto';
 import { PaginatedService } from 'src/common/services/pagination.service';
-import { User } from '@clerk/backend';
 import { DatabaseService } from 'src/database/database.service';
 import { TaskLabel, TaskUrgency } from 'src/generated/prisma/enums';
+import { User } from 'src/generated/prisma/client';
 
 const TASK_LABELS: TaskLabel[] = [
   'BUG',
@@ -28,10 +28,17 @@ export class TasksService {
     return 'This action adds a new task';
   }
 
-  async findAll(clerkUser: User, taskQueryDto: TaskQueryDto) {
+  async findAll(user: User, taskQueryDto: TaskQueryDto) {
     const { skip, take } = this.paginationService.getPagination(taskQueryDto);
-    const { description, projectName, label, priority, projectId } =
-      taskQueryDto;
+    const {
+      description,
+      projectName,
+      label,
+      priority,
+      projectId,
+      startDate,
+      startDateGte,
+    } = taskQueryDto;
 
     // Validate and normalize label
     const taskLabel = this.findEnumValue(TASK_LABELS, label);
@@ -59,10 +66,15 @@ export class TasksService {
             : undefined,
           ProjectMembers: {
             some: {
-              userClerkId: clerkUser.id,
+              userClerkId: user.clerkId,
             },
           },
         },
+        startDate: startDate
+          ? startDate
+          : startDateGte
+            ? { gte: startDateGte }
+            : undefined,
       },
       include: {
         Project: true,

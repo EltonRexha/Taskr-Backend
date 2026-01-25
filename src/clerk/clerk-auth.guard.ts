@@ -30,20 +30,16 @@ export class ClerkAuthGuard implements CanActivate {
 
     try {
       const session = await this.clerkService.getSession(token);
-      const user = await this.clerkService.getUser(session.sub);
-      request.clerkUser = user;
 
       //Check if the user was registered on our database through our webhook
-      const dbUser = await this.usersService.findOne(user.id);
+      const dbUser = await this.usersService.findOne(session.sub);
       if (!dbUser) {
         throw new UnauthorizedException('User not found in database', {
           description: 'Please try again later',
         });
       }
 
-      if (user.banned) {
-        throw new UnauthorizedException('User is banned');
-      }
+      request.user = dbUser;
 
       return true;
     } catch {
