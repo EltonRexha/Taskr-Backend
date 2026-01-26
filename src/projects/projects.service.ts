@@ -16,7 +16,7 @@ export class ProjectsService {
   }
 
   async findAll(user: User, projectQueryDto: ProjectQueryDto) {
-    const { skip, take } =
+    const { skip, take, page } =
       this.paginationService.getPagination(projectQueryDto);
 
     const { project_name: projectName } = projectQueryDto;
@@ -34,9 +34,11 @@ export class ProjectsService {
       skip,
       take,
     });
+    const projectsCount = await this.prisma.project.count();
+
     return {
       data: projects,
-      meta: this.paginationService.getMeta(projects.length, skip, take),
+      meta: this.paginationService.getMeta(projectsCount, page, take),
     };
   }
 

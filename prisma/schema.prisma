@@ -173,7 +173,7 @@ model Task {
   dueDate     DateTime        @map("due_date") @db.Date
   createdAt   DateTime        @map("created_at")
   updatedAt   DateTime        @map("updated_at")
-  scrumTasks  ScrumTask[]
+  scrumTask   ScrumTask?
   AssignedTo  ProjectMember[]
 
   @@map("tasks")
@@ -181,10 +181,10 @@ model Task {
 
 model ScrumTask {
   id            String          @id @default(uuid())
-  task          Task            @relation(fields: [taskId], references: [id])
-  taskId        String          @map("task_id")
-  scrumEpic     ScrumEpic       @relation(fields: [scrumEpicId], references: [id])
-  scrumEpicId   String          @map("epic_id")
+  task          Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId        String          @unique @map("task_id")
+  scrumEpic     ScrumEpic?      @relation(fields: [scrumEpicId], references: [id], onDelete: Cascade)
+  scrumEpicId   String?         @map("epic_id")
   draftSprint   DraftSprint?    @relation(fields: [draftSprintId], references: [id])
   draftSprintId String?         @map("draft_sprint_id")
   sprint        Sprint?         @relation(fields: [sprintId], references: [id])

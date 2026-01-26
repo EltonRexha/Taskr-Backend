@@ -25,9 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # 3.5 Generate Prisma client
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       # 4. Lint code
       - name: Lint code
-        run: npx eslint "src/**/*.{ts,js}"
+        run: npm run lint
 
       # 5. Build NestJS project
       - name: Build project

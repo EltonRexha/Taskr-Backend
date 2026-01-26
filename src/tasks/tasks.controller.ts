@@ -40,6 +40,13 @@ export class TasksController {
           id: data.Project.id,
           name: data.Project.name,
         },
+        ...(data.metaData && {
+          metaData: {
+            id: data.metaData.id,
+            status: data.metaData.status,
+            type: data.metaData.type,
+          },
+        }),
         startDate: data.startDate,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
