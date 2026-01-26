@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { transformToUtcDate } from 'src/common/utils/transform.to.utc.date';
 
 export class TaskQueryDto extends PaginationDto {
   @IsOptional()
@@ -24,58 +25,30 @@ export class TaskQueryDto extends PaginationDto {
   projectId?: string;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    if (!value) return undefined;
+  @IsString()
+  type?: string;
 
-    if (typeof value === 'string') {
-      const parts = value.split('-').map(Number);
+  @IsOptional()
+  @IsString()
+  status?: string;
 
-      // Check format correctness
-      if (
-        parts.length !== 3 ||
-        parts.some(isNaN) ||
-        parts[0] < 1000 ||
-        parts[1] < 1 ||
-        parts[1] > 12 ||
-        parts[2] < 1 ||
-        parts[2] > 31
-      ) {
-        return undefined;
-      }
-
-      return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-    }
-
-    return undefined;
-  })
+  @IsOptional()
+  @Transform(transformToUtcDate)
   @IsDate({ message: 'startDate must be in YYYY-MM-DD format' })
   startDate?: Date;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    if (!value) return undefined;
-
-    if (typeof value === 'string') {
-      const parts = value.split('-').map(Number);
-
-      // Check format correctness
-      if (
-        parts.length !== 3 ||
-        parts.some(isNaN) ||
-        parts[0] < 1000 ||
-        parts[1] < 1 ||
-        parts[1] > 12 ||
-        parts[2] < 1 ||
-        parts[2] > 31
-      ) {
-        return undefined;
-      }
-
-      return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-    }
-
-    return undefined;
-  })
-  @IsDate({ message: 'startDate must be in YYYY-MM-DD format' })
+  @Transform(transformToUtcDate)
+  @IsDate({ message: 'startDateGte must be in YYYY-MM-DD format' })
   startDateGte?: Date;
+
+  @IsOptional()
+  @Transform(transformToUtcDate)
+  @IsDate({ message: 'dueDate must be in YYYY-MM-DD format' })
+  dueDate?: Date;
+
+  @IsOptional()
+  @Transform(transformToUtcDate)
+  @IsDate({ message: 'dueDateLte must be in YYYY-MM-DD format' })
+  dueDateLte?: Date;
 }
