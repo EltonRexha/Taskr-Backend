@@ -14,7 +14,11 @@ import { UseGuards } from '@nestjs/common';
 import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 import type { Request } from 'express';
 import { ProjectQueryDto } from './dto/query-projects.dto';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ProjectsResponseDto } from './dto/response-project.dto';
 
+@ApiTags('Projects')
+@ApiBearerAuth()
 @UseGuards(ClerkAuthGuard)
 @Controller('projects')
 export class ProjectsController {
@@ -26,6 +30,7 @@ export class ProjectsController {
   }
 
   @Get()
+  @ApiOkResponse({ type: ProjectsResponseDto })
   async findAll(@Req() req: Request, @Query() query: ProjectQueryDto) {
     const projects = await this.projectsService.findAll(req.user, query);
     return {

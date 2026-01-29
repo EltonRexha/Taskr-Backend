@@ -1,8 +1,10 @@
 import { IsOptional, IsString } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 export class ProjectQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
-  project_name?: string;
+  @ApiPropertyOptional({ description: 'Filter by project name' })
+  projectName?: string;
 }

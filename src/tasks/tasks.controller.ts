@@ -14,7 +14,11 @@ import { TasksService } from './tasks.service';
 import { TaskQueryDto } from './dto/query-tasks.dto';
 import type { Request } from 'express';
 import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { TasksResponseDto } from './dto/response.task.dto';
 
+@ApiTags('Tasks')
+@ApiBearerAuth()
 @UseGuards(ClerkAuthGuard)
 @Controller('tasks')
 export class TasksController {
@@ -26,6 +30,7 @@ export class TasksController {
   }
 
   @Get()
+  @ApiOkResponse({ type: TasksResponseDto })
   async findAll(@Req() req: Request, @Query() query: TaskQueryDto) {
     const tasks = await this.tasksService.findAll(req.user, query);
 
