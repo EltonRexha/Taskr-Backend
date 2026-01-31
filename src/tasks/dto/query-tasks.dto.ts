@@ -65,6 +65,16 @@ export class TaskQueryDto extends PaginationDto {
 
   @IsOptional()
   @Transform(transformToUtcDate)
+  @IsDate({ message: 'startDateLte must be in YYYY-MM-DD format' })
+  @ApiPropertyOptional({
+    description: 'Filter tasks starting before or equal to this date',
+    type: String,
+    format: 'date',
+  })
+  startDateLte?: Date;
+
+  @IsOptional()
+  @Transform(transformToUtcDate)
   @IsDate({ message: 'dueDate must be in YYYY-MM-DD format' })
   @ApiPropertyOptional({
     description: 'Filter tasks due by this date',

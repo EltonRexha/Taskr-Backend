@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { ProjectQueryDto } from './dto/query-projects.dto';
-import { User } from 'src/generated/prisma/client';
+import { User } from 'prisma/generated/prisma/client';
 
 @Injectable()
 export class ProjectsService {

@@ -12,8 +12,8 @@ import {
   TaskUrgency,
   ScrumTaskStatus,
   ProjectType,
-} from 'src/generated/prisma/enums';
-import { Prisma, User } from 'src/generated/prisma/client';
+} from '../../prisma/generated/prisma/enums';
+import { Prisma, User } from '../../prisma/generated/prisma/client';
 
 @Injectable()
 export class TasksService {
@@ -56,10 +56,22 @@ export class TasksService {
     dueDate: true,
     createdAt: true,
     updatedAt: true,
-    Project: {
+    project: {
       select: {
         id: true,
         name: true,
+      },
+    },
+    assignedTo: {
+      select: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            profileImage: true,
+          },
+        },
       },
     },
     ...this.TASK_METADATA_SELECT,
@@ -86,6 +98,7 @@ export class TasksService {
         projectId,
         startDate,
         startDateGte,
+        startDateLte,
         dueDate,
         dueDateLte,
         status,
@@ -105,23 +118,25 @@ export class TasksService {
           : undefined,
         label: taskLabel,
         priority: taskPriority,
-        Project: {
+        project: {
           id: projectId,
           name: projectName
             ? { contains: projectName, mode: 'insensitive' }
             : undefined,
-          ProjectMembers: {
+          projectMembers: {
             some: {
               userClerkId: user.clerkId,
             },
           },
-          ProjectType: projectType,
+          projectType: projectType,
         },
         startDate: startDate
           ? startDate
           : startDateGte
             ? { gte: startDateGte }
-            : undefined,
+            : startDateLte
+              ? { lte: startDateLte }
+              : undefined,
         dueDate: dueDate
           ? dueDate
           : dueDateLte

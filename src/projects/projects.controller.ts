@@ -37,7 +37,7 @@ export class ProjectsController {
       projects: projects.data.map((project) => ({
         id: project.id,
         name: project.name,
-        projectType: project.ProjectType,
+        projectType: project.projectType,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
       })),
