@@ -5,7 +5,6 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TaskQueryDto } from './dto/query-tasks.dto';
-import { PaginatedService } from 'src/common/services/pagination.service';
 import { DatabaseService } from 'src/database/database.service';
 import {
   TaskLabel,
@@ -14,6 +13,8 @@ import {
   ProjectType,
 } from '../../prisma/generated/prisma/enums';
 import { Prisma, User } from '../../prisma/generated/prisma/client';
+import { PaginatedService } from 'src/common/services/pagination.service';
+import { keysToCamel } from 'src/common/utils/snake-to-camel.util';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -25,10 +26,10 @@ export class TasksService {
    * Fields that can be used for sorting
    */
   private readonly sortByFields = [
-    'createdAt',
-    'updatedAt',
-    'dueDate',
-    'startDate',
+    'created_at',
+    'updated_at',
+    'due_date',
+    'start_date',
     'priority',
     'type',
   ] as const;
@@ -107,18 +108,18 @@ export class TasksService {
         this.paginationService.getPagination(taskQueryDto);
       const {
         description,
-        projectName,
+        project_name,
         label,
         priority,
-        projectId,
-        startDate,
-        startDateGte,
-        startDateLte,
-        dueDate,
-        dueDateLte,
+        project_id,
+        start_date,
+        start_date_gte,
+        start_date_lte,
+        due_date,
+        due_date_lte,
         status,
         type,
-        sortBy,
+        sort_by,
       } = taskQueryDto;
 
       // Validate and normalize inputs
@@ -126,40 +127,42 @@ export class TasksService {
       const taskPriority = this.validateTaskPriority(priority);
       const projectType = this.validateProjectType(type);
       const taskStatus = this.validateScrumTaskStatus(status);
-      const sortByField = this.validateSortBy(sortBy);
+      const sortByField = this.validateSortBy(sort_by);
 
       // Build reusable where clause
       const whereClause: Prisma.TaskWhereInput = {
-        description: description
-          ? { contains: description, mode: 'insensitive' }
-          : undefined,
-        label: taskLabel,
-        priority: taskPriority,
-        project: {
-          id: projectId,
-          name: projectName
-            ? { contains: projectName, mode: 'insensitive' }
+        AND: {
+          description: description
+            ? { contains: description, mode: 'insensitive' }
             : undefined,
-          projectMembers: {
-            some: {
-              userClerkId: user.clerkId,
-            },
-          },
-          projectType: projectType,
-        },
-        startDate: startDate
-          ? startDate
-          : startDateGte
-            ? { gte: startDateGte }
-            : startDateLte
-              ? { lte: startDateLte }
+          label: taskLabel,
+          priority: taskPriority,
+          project: {
+            id: project_id,
+            name: project_name
+              ? { contains: project_name, mode: 'insensitive' }
               : undefined,
-        dueDate: dueDate
-          ? dueDate
-          : dueDateLte
-            ? { lte: dueDateLte }
-            : undefined,
-        ...this.buildStatusFilter(taskStatus),
+            projectMembers: {
+              some: {
+                userClerkId: user.clerkId,
+              },
+            },
+            projectType: projectType,
+          },
+          startDate: start_date
+            ? start_date
+            : start_date_gte
+              ? { gte: start_date_gte }
+              : start_date_lte
+                ? { lte: start_date_lte }
+                : undefined,
+          dueDate: due_date
+            ? due_date
+            : due_date_lte
+              ? { lte: due_date_lte }
+              : undefined,
+          ...this.buildStatusFilter(taskStatus),
+        },
       };
 
       // Fetch tasks and count in parallel for better performance
@@ -169,7 +172,7 @@ export class TasksService {
           select: this.TASK_SELECT,
           skip,
           take,
-          orderBy: sortByField,
+          orderBy: keysToCamel(sortByField || {}),
         }),
         this.prisma.task.count({ where: whereClause }),
       ]);

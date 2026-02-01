@@ -19,7 +19,7 @@ export class ProjectsService {
     const { skip, take, page } =
       this.paginationService.getPagination(projectQueryDto);
 
-    const { projectName } = projectQueryDto;
+    const { project_name } = projectQueryDto;
 
     const projects = await this.prisma.project.findMany({
       where: {
@@ -28,12 +28,19 @@ export class ProjectsService {
             userClerkId: user.clerkId,
           },
         },
-        ...(projectName && {
+        ...(project_name && {
           name: {
-            contains: projectName,
+            contains: project_name,
             mode: 'insensitive',
           },
         }),
+      },
+      select: {
+        id: true,
+        name: true,
+        projectType: true,
+        createdAt: true,
+        updatedAt: true,
       },
       skip,
       take,
