@@ -17,15 +17,15 @@ export class PaginatedService {
   /**
    * Builds pagination metadata for a paginated API response.
    *
-   * The meta object provides context about the returned data,
-   * such as how many total records exist, which page is currently
-   * being viewed, and how many pages are available in total.
+   * The returned `meta` object provides context about the paginated data,
+   * including the current page, page size, total number of records,
+   * total number of pages, and navigation helpers.
    *
-   * @param total - Total number of records available (without pagination).
+   * @param total - Total number of records available (before pagination).
    * @param page - Current page number (1-based).
    * @param limit - Number of records per page.
    *
-   * @returns An object containing pagination metadata.
+   * @returns Pagination metadata describing the current pagination state.
    *
    * @example
    * const meta = paginationService.getMeta(128, 3, 10);
@@ -35,10 +35,21 @@ export class PaginatedService {
    * //   total: 128,
    * //   page: 3,
    * //   limit: 10,
-   * //   totalPages: 13
+   * //   totalPages: 13,
+   * //   hasPreviousPage: true,
+   * //   hasNextPage: true
    * // }
    */
   getMeta(total: number, page: number, limit: number) {
-    return { total, page, limit, totalPages: Math.ceil(total / limit) };
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      total,
+      page,
+      limit,
+      totalPages,
+      hasPreviousPage: page > 1,
+      hasNextPage: page < totalPages,
+    };
   }
 }

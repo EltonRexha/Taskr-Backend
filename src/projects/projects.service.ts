@@ -23,7 +23,11 @@ export class ProjectsService {
 
     const projects = await this.prisma.project.findMany({
       where: {
-        userClerkId: user.clerkId,
+        projectMembers: {
+          some: {
+            userClerkId: user.clerkId,
+          },
+        },
         ...(projectName && {
           name: {
             contains: projectName,

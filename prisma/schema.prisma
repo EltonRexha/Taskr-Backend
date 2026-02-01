@@ -55,8 +55,8 @@ model Epic {
   color       EpicColor       @map("epic_color")
   startDate   DateTime        @map("start_date") @db.Date
   dueDate     DateTime        @map("due_date") @db.Date
-  createdAt   DateTime        @map("created_at")
-  updatedAt   DateTime        @map("updated_at")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
   assignedTo  ProjectMember[]
   scrumEpics  ScrumEpic[]
 
@@ -67,8 +67,8 @@ model ScrumProject {
   id           String        @id @default(uuid())
   backlog      Backlog       @relation(fields: [backlogId], references: [id])
   backlogId    String        @map("backlog_id")
-  createdAt    DateTime      @map("created_at")
-  updatedAt    DateTime      @map("updated_at")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
   draftSprints DraftSprint[]
   sprints      Sprint[]
   projects     Project[]
@@ -83,8 +83,8 @@ model Sprint {
   dueDate        DateTime     @map("due_date") @db.Date
   description    String
   sprintStatus   SprintStatus @default(DUE)
-  createdAt      DateTime     @map("created_at")
-  updatedAt      DateTime     @map("updated_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
   scrumProject   ScrumProject @relation(fields: [scrumProjectId], references: [id])
   scrumProjectId String       @map("scrum_project_id")
   scrumEpics     ScrumEpic[]
@@ -98,8 +98,8 @@ model DraftSprint {
   title          String
   scrumProject   ScrumProject @relation(fields: [scrumProjectId], references: [id])
   scrumProjectId String       @map("scrum_project_id")
-  createdAt      DateTime     @map("created_at")
-  updatedAt      DateTime     @map("updated_at")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
   scrumTasks     ScrumTask[]
   scrumEpics     ScrumEpic[]
 }
@@ -114,8 +114,8 @@ model ScrumEpic {
   draftSprintId String?
   backlog       Backlog?     @relation(fields: [backlogId], references: [id])
   backlogId     String?
-  createdAt     DateTime     @map("created_at")
-  updatedAt     DateTime     @map("updated_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
   scrumTasks    ScrumTask[]
 
   @@map("scrum_epics")
@@ -130,8 +130,8 @@ model Project {
   author         User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
   userClerkId    String?         @map("user_clerk_id")
   starred        Boolean         @default(false)
-  createdAt      DateTime        @map("created_at")
-  updatedAt      DateTime        @map("updated_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
   projectMembers ProjectMember[]
   tasks          Task[]
 
@@ -145,8 +145,8 @@ model ProjectMember {
   role          ProjectMemberRole
   project       Project           @relation(fields: [projectId], references: [id])
   projectId     String            @map("project_id")
-  createdAt     DateTime          @map("created_at")
-  updatedAt     DateTime          @map("updated_at")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
   assignedTasks Task[]
   assignedEpics Epic[]
 
@@ -157,6 +157,7 @@ model Task {
   id          String          @id @default(uuid())
   author      User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
   userClerkId String?         @map("user_clerk_id")
+  title       String
   description String
   label       TaskLabel
   priority    TaskUrgency
@@ -164,8 +165,8 @@ model Task {
   projectId   String          @map("project_id")
   startDate   DateTime        @map("start_date") @db.Date
   dueDate     DateTime        @map("due_date") @db.Date
-  createdAt   DateTime        @map("created_at")
-  updatedAt   DateTime        @map("updated_at")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
   scrumTask   ScrumTask?
   assignedTo  ProjectMember[]
 
@@ -185,8 +186,8 @@ model ScrumTask {
   backlog       Backlog?        @relation(fields: [backlogId], references: [id])
   backlogId     String?
   status        ScrumTaskStatus
-  createdAt     DateTime        @map("created_at")
-  updatedAt     DateTime        @map("updated_at")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
 
   @@map("scrum_tasks")
 }

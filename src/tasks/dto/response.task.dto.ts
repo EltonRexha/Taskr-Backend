@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TaskDto } from './task.dto';
+import { ResponsePaginationDto } from 'src/common/dto/response-pagination.dto';
 
-export class TasksResponseDto extends PaginationDto {
+export class TasksResponseDto {
   @ApiProperty({ type: [TaskDto] })
   tasks: TaskDto[];
+
+  @ApiProperty({ type: ResponsePaginationDto })
+  metadata: ResponsePaginationDto;
 }
