@@ -11,6 +11,9 @@ export class TaskDto {
   description: string;
 
   @ApiProperty()
+  title: string;
+
+  @ApiProperty()
   label: string;
 
   @ApiProperty()

@@ -68,6 +68,7 @@ export class TasksService {
     priority: true,
     startDate: true,
     dueDate: true,
+    title: true,
     createdAt: true,
     updatedAt: true,
     project: {
@@ -119,8 +120,6 @@ export class TasksService {
         type,
         sortBy,
       } = taskQueryDto;
-
-      console.log({ sortBy });
 
       // Validate and normalize inputs
       const taskLabel = this.validateTaskLabel(label);
