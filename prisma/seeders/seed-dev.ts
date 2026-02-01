@@ -1,5 +1,3 @@
-/// <reference types="node" />
-
 import 'dotenv/config';
 import { faker } from '@faker-js/faker';
 import {
