@@ -15,9 +15,23 @@ import {
 } from '../../prisma/generated/prisma/enums';
 import { Prisma, User } from '../../prisma/generated/prisma/client';
 
+type SortOrder = 'asc' | 'desc';
+
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
+
+  /**
+   * Fields that can be used for sorting
+   */
+  private readonly sortByFields = [
+    'createdAt',
+    'updatedAt',
+    'dueDate',
+    'startDate',
+    'priority',
+    'type',
+  ] as const;
 
   /**
    * Standard select configuration for task metadata.
@@ -103,13 +117,17 @@ export class TasksService {
         dueDateLte,
         status,
         type,
+        sortBy,
       } = taskQueryDto;
+
+      console.log({ sortBy });
 
       // Validate and normalize inputs
       const taskLabel = this.validateTaskLabel(label);
       const taskPriority = this.validateTaskPriority(priority);
       const projectType = this.validateProjectType(type);
       const taskStatus = this.validateScrumTaskStatus(status);
+      const sortByField = this.validateSortBy(sortBy);
 
       // Build reusable where clause
       const whereClause: Prisma.TaskWhereInput = {
@@ -152,6 +170,7 @@ export class TasksService {
           select: this.TASK_SELECT,
           skip,
           take,
+          orderBy: sortByField,
         }),
         this.prisma.task.count({ where: whereClause }),
       ]);
@@ -248,6 +267,51 @@ export class TasksService {
     // Future: Check kanbanTask here
 
     return null;
+  }
+
+  /**
+   * Validates and normalizes sort by fields with order.
+   *
+   * @param sortByItems - Array like ['priority:desc', 'dueDate:asc']
+   * @returns Prisma-compatible orderBy array or undefined
+   * @throws BadRequestException if field or order is invalid
+   */
+  private validateSortBy(sortByItems?: string[]):
+    | Array<{
+        [key in (typeof this.sortByFields)[number]]?: SortOrder;
+      }>
+    | undefined {
+    if (!sortByItems || sortByItems.length === 0) return undefined;
+
+    return sortByItems.map((item) => {
+      const [rawField, rawOrder = 'asc'] = item.split(':');
+
+      const order = rawOrder.toLowerCase() as SortOrder;
+
+      if (
+        !this.sortByFields.includes(
+          rawField as (typeof this.sortByFields)[number],
+        )
+      ) {
+        throw new BadRequestException(
+          `Invalid sort field: ${rawField}. Valid values are: ${this.sortByFields.join(
+            ', ',
+          )}`,
+        );
+      }
+
+      if (!['asc', 'desc'].includes(order)) {
+        throw new BadRequestException(
+          `Invalid sort order: ${rawOrder}. Valid values are: asc, desc`,
+        );
+      }
+
+      return {
+        [rawField]: order,
+      } as {
+        [key in (typeof this.sortByFields)[number]]: SortOrder;
+      };
+    });
   }
 
   /**

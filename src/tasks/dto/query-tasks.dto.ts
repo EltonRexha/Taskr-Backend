@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDate, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { transformToUtcDate } from 'src/common/utils/transform.to.utc.date';
@@ -92,4 +92,20 @@ export class TaskQueryDto extends PaginationDto {
     format: 'date',
   })
   dueDateLte?: Date;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }) =>
+    Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? [value]
+        : undefined,
+  )
+  @ApiPropertyOptional({
+    example: ['priority:desc', 'dueDate:asc'],
+    description: 'Sort by fields in format field:order (e.g., priority:desc)',
+  })
+  sortBy?: string[];
 }
