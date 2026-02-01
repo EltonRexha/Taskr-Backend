@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { ProjectQueryDto } from './dto/query-projects.dto';
-import { User } from 'src/generated/prisma/client';
+import { User } from 'prisma/generated/prisma/client';
 
 @Injectable()
 export class ProjectsService {
@@ -19,17 +19,28 @@ export class ProjectsService {
     const { skip, take, page } =
       this.paginationService.getPagination(projectQueryDto);
 
-    const { projectName } = projectQueryDto;
+    const { project_name } = projectQueryDto;
 
     const projects = await this.prisma.project.findMany({
       where: {
-        userClerkId: user.clerkId,
-        ...(projectName && {
+        projectMembers: {
+          some: {
+            userClerkId: user.clerkId,
+          },
+        },
+        ...(project_name && {
           name: {
-            contains: projectName,
+            contains: project_name,
             mode: 'insensitive',
           },
         }),
+      },
+      select: {
+        id: true,
+        name: true,
+        projectType: true,
+        createdAt: true,
+        updatedAt: true,
       },
       skip,
       take,

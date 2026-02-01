@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { TaskProjectDto } from './task-project.dot';
+import { TaskProjectDto } from './task-project.dto';
 import { TaskMetaDto } from './task-meta.dto';
+import { AssignedToDto } from './task-assignee.dto';
 
 export class TaskDto {
   @ApiProperty()
@@ -8,6 +9,9 @@ export class TaskDto {
 
   @ApiProperty()
   description: string;
+
+  @ApiProperty()
+  title: string;
 
   @ApiProperty()
   label: string;
@@ -27,9 +31,9 @@ export class TaskDto {
   @ApiProperty()
   updatedAt: string;
 
-  @ApiProperty({ type: TaskProjectDto })
-  project: TaskProjectDto;
+  @ApiProperty({ type: [AssignedToDto], description: 'List of assigned users' })
+  assignedTo: AssignedToDto[];
 
-  @ApiPropertyOptional({ type: TaskMetaDto })
-  metaData?: TaskMetaDto;
+  @ApiProperty({ type: TaskProjectDto }) project: TaskProjectDto;
+  @ApiPropertyOptional({ type: TaskMetaDto }) metaData?: TaskMetaDto;
 }

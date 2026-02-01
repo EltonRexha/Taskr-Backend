@@ -35,28 +35,8 @@ export class TasksController {
     const tasks = await this.tasksService.findAll(req.user, query);
 
     return {
-      tasks: tasks.data.map((data) => ({
-        id: data.id,
-        description: data.description,
-        label: data.label,
-        priority: data.priority,
-        dueDate: data.dueDate,
-        project: {
-          id: data.Project.id,
-          name: data.Project.name,
-        },
-        ...(data.metaData && {
-          metaData: {
-            id: data.metaData.id,
-            status: data.metaData.status,
-            type: data.metaData.type,
-          },
-        }),
-        startDate: data.startDate,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-      })),
-      meta: tasks.meta,
+      tasks: tasks.data,
+      metadata: tasks.meta,
     };
   }
 

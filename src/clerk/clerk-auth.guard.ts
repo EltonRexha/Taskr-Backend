@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  HttpException,
 } from '@nestjs/common';
 import { ClerkService } from './clerk.service';
 import { Request } from 'express';
@@ -34,15 +35,17 @@ export class ClerkAuthGuard implements CanActivate {
       //Check if the user was registered on our database through our webhook
       const dbUser = await this.usersService.findOne(session.sub);
       if (!dbUser) {
-        throw new UnauthorizedException('User not found in database', {
-          description: 'Please try again later',
-        });
+        throw new UnauthorizedException('User not found');
       }
 
       request.user = dbUser;
 
       return true;
-    } catch {
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+
       throw new UnauthorizedException('Invalid token');
     }
   }

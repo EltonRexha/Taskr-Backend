@@ -1,8 +1,8 @@
 import { Transform } from 'class-transformer';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDate, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { transformToUtcDate } from 'src/common/utils/transform.to.utc.date';
+import { transformToUtcDate } from 'src/common/utils/transform-to-utc-date';
 
 export class TaskQueryDto extends PaginationDto {
   @IsOptional()
@@ -13,7 +13,7 @@ export class TaskQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ description: 'Filter by project name' })
-  projectName?: string;
+  project_name?: string;
 
   @IsOptional()
   @IsString()
@@ -28,7 +28,7 @@ export class TaskQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ description: 'Filter by project ID' })
-  projectId?: string;
+  project_id?: string;
 
   @IsOptional()
   @IsString()
@@ -45,41 +45,67 @@ export class TaskQueryDto extends PaginationDto {
 
   @IsOptional()
   @Transform(transformToUtcDate)
-  @IsDate({ message: 'startDate must be in YYYY-MM-DD format' })
+  @IsDate({ message: 'start_date must be in YYYY-MM-DD format' })
   @ApiPropertyOptional({
     description: 'Filter tasks starting from this date',
     type: String,
     format: 'date',
   })
-  startDate?: Date;
+  start_date?: Date;
 
   @IsOptional()
   @Transform(transformToUtcDate)
-  @IsDate({ message: 'startDateGte must be in YYYY-MM-DD format' })
+  @IsDate({ message: 'start_date_gte must be in YYYY-MM-DD format' })
   @ApiPropertyOptional({
     description: 'Filter tasks starting after or equal to this date',
     type: String,
     format: 'date',
   })
-  startDateGte?: Date;
+  start_date_gte?: Date;
 
   @IsOptional()
   @Transform(transformToUtcDate)
-  @IsDate({ message: 'dueDate must be in YYYY-MM-DD format' })
+  @IsDate({ message: 'start_date_lte must be in YYYY-MM-DD format' })
+  @ApiPropertyOptional({
+    description: 'Filter tasks starting before or equal to this date',
+    type: String,
+    format: 'date',
+  })
+  start_date_lte?: Date;
+
+  @IsOptional()
+  @Transform(transformToUtcDate)
+  @IsDate({ message: 'due_date must be in YYYY-MM-DD format' })
   @ApiPropertyOptional({
     description: 'Filter tasks due by this date',
     type: String,
     format: 'date',
   })
-  dueDate?: Date;
+  due_date?: Date;
 
   @IsOptional()
   @Transform(transformToUtcDate)
-  @IsDate({ message: 'dueDateLte must be in YYYY-MM-DD format' })
+  @IsDate({ message: 'due_date_lte must be in YYYY-MM-DD format' })
   @ApiPropertyOptional({
     description: 'Filter tasks due before or equal to this date',
     type: String,
     format: 'date',
   })
-  dueDateLte?: Date;
+  due_date_lte?: Date;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }) =>
+    Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? [value]
+        : undefined,
+  )
+  @ApiPropertyOptional({
+    example: ['priority:desc', 'due_date:asc'],
+    description: 'Sort by fields in format field:order (e.g., priority:desc)',
+  })
+  sort_by?: string[];
 }

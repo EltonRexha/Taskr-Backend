@@ -6,5 +6,5 @@ export class ProjectQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ description: 'Filter by project name' })
-  projectName?: string;
+  project_name?: string;
 }
