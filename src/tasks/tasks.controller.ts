@@ -13,13 +13,13 @@ import {
 import { TasksService } from './tasks.service';
 import { TaskQueryDto } from './dto/query-tasks.dto';
 import type { Request } from 'express';
-import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TasksResponseDto } from './dto/response.task.dto';
+import { AbilitiesGuard } from 'src/auth/guards/abilities.guard';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
-@UseGuards(ClerkAuthGuard)
+@UseGuards(AbilitiesGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}

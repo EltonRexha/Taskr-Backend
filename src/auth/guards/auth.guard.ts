@@ -5,18 +5,31 @@ import {
   UnauthorizedException,
   HttpException,
 } from '@nestjs/common';
-import { ClerkService } from './clerk.service';
+import { ClerkService } from '../../clerk/clerk.service';
 import { Request } from 'express';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../users/users.service';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
-export class ClerkAuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(
     private clerkService: ClerkService,
     private usersService: UsersService,
+    private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    //Check if its a public route
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const request: Request = context.switchToHttp().getRequest<Request>();
     const authorizationHeader = request.headers['authorization'];
 

@@ -10,16 +10,14 @@ import {
   Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
-import { UseGuards } from '@nestjs/common';
-import { ClerkAuthGuard } from 'src/clerk/clerk-auth.guard';
 import type { Request } from 'express';
 import { ProjectQueryDto } from './dto/query-projects.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectsResponseDto } from './dto/response-project.dto';
+import { CheckAbilities } from 'src/auth/decorators/check-abilities.decorator';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
-@UseGuards(ClerkAuthGuard)
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
@@ -40,6 +38,7 @@ export class ProjectsController {
   }
 
   @Get(':id')
+  @CheckAbilities('delete', 'project', (req) => req.params.id)
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(+id);
   }

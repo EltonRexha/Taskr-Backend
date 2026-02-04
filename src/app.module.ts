@@ -8,6 +8,10 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { ClerkModule } from './clerk/clerk.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/guards/auth.guard';
+import { AbilitiesGuard } from './auth/guards/abilities.guard';
 
 @Module({
   imports: [
@@ -18,8 +22,19 @@ import { TasksModule } from './tasks/tasks.module';
     ClerkModule,
     ProjectsModule,
     TasksModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AbilitiesGuard,
+    },
+  ],
 })
 export class AppModule {}

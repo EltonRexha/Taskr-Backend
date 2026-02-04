@@ -223,7 +223,8 @@ enum ProjectType {
 
 enum ProjectMemberRole {
   ADMIN
-  USER
+  MEMBER
+  VIEWER
 }
 
 enum SprintStatus {
