@@ -11,7 +11,8 @@ import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/auth.guard';
-import { AbilitiesGuard } from './auth/guards/abilities.guard';
+import { AbilitiesGuard } from './casl/guards/abilities.guard';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AbilitiesGuard } from './auth/guards/abilities.guard';
     ProjectsModule,
     TasksModule,
     AuthModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [

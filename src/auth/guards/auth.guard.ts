@@ -21,14 +21,14 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     //Check if its a public route
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    // const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+    //   context.getHandler(),
+    //   context.getClass(),
+    // ]);
 
-    if (isPublic) {
-      return true;
-    }
+    // if (isPublic) {
+    //   return true;
+    // }
 
     const request: Request = context.switchToHttp().getRequest<Request>();
     const authorizationHeader = request.headers['authorization'];

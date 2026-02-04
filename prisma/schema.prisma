@@ -150,6 +150,7 @@ model ProjectMember {
   assignedTasks Task[]
   assignedEpics Epic[]
 
+  @@unique([userClerkId, projectId])
   @@map("project_members")
 }
 

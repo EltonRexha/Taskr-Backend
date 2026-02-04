@@ -14,7 +14,7 @@ import type { Request } from 'express';
 import { ProjectQueryDto } from './dto/query-projects.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectsResponseDto } from './dto/response-project.dto';
-import { CheckAbilities } from 'src/auth/decorators/check-abilities.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -27,6 +27,7 @@ export class ProjectsController {
     return this.projectsService.create();
   }
 
+  @Public()
   @Get()
   @ApiOkResponse({ type: ProjectsResponseDto })
   async findAll(@Req() req: Request, @Query() query: ProjectQueryDto) {
@@ -38,7 +39,6 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  @CheckAbilities('delete', 'project', (req) => req.params.id)
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne(+id);
   }
