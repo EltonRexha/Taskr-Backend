@@ -7,6 +7,7 @@ import {
   Project,
   Sprint,
   Epic,
+  Prisma,
 } from 'prisma/generated/prisma/client';
 import { PrismaQuery, Subjects } from '@casl/prisma';
 
@@ -81,8 +82,7 @@ export type AbilityBuilderType = AbilityBuilder<AppAbility>;
  */
 export interface AbilityContext {
   user: User;
-  projectMember?: ProjectMember | null;
-  projectId?: string;
+  projectMembers?: ProjectMember[];
 }
 
 /**
@@ -90,4 +90,34 @@ export interface AbilityContext {
  */
 export interface Policy {
   define(builder: AbilityBuilderType, context: AbilityContext): void;
+}
+
+export type SubjectsMap = {
+  USER: Prisma.UserWhereInput;
+  PROJECT: Prisma.ProjectWhereInput;
+  PROJECT_MEMBER: Prisma.ProjectMemberWhereInput;
+  TASK: Prisma.TaskWhereInput;
+  SPRINT: Prisma.SprintWhereInput;
+  EPIC: Prisma.EpicWhereInput;
+  all: any;
+};
+
+/**
+ * The Fixed Interface
+ * We use RuleBuilder<AppAbility> as the return type to satisfy the extension
+ */
+export interface TypedAbilityBuilder extends AbilityBuilder<AppAbility> {
+  can<S extends keyof SubjectsMap>(
+    this: void,
+    action: Action | Action[],
+    subject: S,
+    conditions?: SubjectsMap[S],
+  ): ReturnType<AbilityBuilder<AppAbility>['can']>;
+
+  cannot<S extends keyof SubjectsMap>(
+    this: void,
+    action: Action | Action[],
+    subject: S,
+    conditions?: SubjectsMap[S],
+  ): ReturnType<AbilityBuilder<AppAbility>['cannot']>;
 }

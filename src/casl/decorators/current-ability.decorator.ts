@@ -12,7 +12,7 @@ import { Request } from 'express';
  * }
  */
 export const CurrentAbility = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext): AppAbility | undefined => {
+  (_data: unknown, ctx: ExecutionContext): AppAbility | undefined => {
     const request = ctx.switchToHttp().getRequest<Request>();
     return request.ability;
   },

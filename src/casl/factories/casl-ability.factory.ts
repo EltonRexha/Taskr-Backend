@@ -8,12 +8,7 @@ import {
   Action,
   SubjectsFields,
 } from '../types/casl.types';
-import {
-  ProjectPolicy,
-  TaskPolicy,
-  SprintPolicy,
-  EpicPolicy,
-} from '../policies/index';
+import { ProjectPolicy, TaskPolicy, SprintPolicy } from '../policies/index';
 import { ProjectMember, User } from 'prisma/generated/prisma/client';
 import { createPrismaAbility } from '@casl/prisma';
 
@@ -28,31 +23,19 @@ export class CaslAbilityFactory {
 
   constructor() {
     // Register all policies
-    this.policies = [
-      new ProjectPolicy(),
-      new TaskPolicy(),
-      new SprintPolicy(),
-      new EpicPolicy(),
-    ];
+    this.policies = [new ProjectPolicy(), new TaskPolicy(), new SprintPolicy()];
   }
 
   /**
    * Create ability instance for a user
    * @param user - The authenticated user
-   * @param projectMember - Optional project membership context
-   * @param projectId - Optional project ID for context
    */
-  createForUser(
-    user: User,
-    projectMember?: ProjectMember | null,
-    projectId?: string,
-  ): AppAbility {
+  createForUser(user: User, projectMembers?: ProjectMember[]): AppAbility {
     const builder = new AbilityBuilder<AppAbility>(createPrismaAbility);
 
     const context: AbilityContext = {
       user,
-      projectMember: projectMember ?? null,
-      projectId,
+      projectMembers,
     };
 
     // Apply all policies
@@ -67,18 +50,7 @@ export class CaslAbilityFactory {
       }
     }
 
-    console.log('building');
     const ability = builder.build();
-
-    // Log ability creation in development
-    if (process.env.NODE_ENV === 'development') {
-      this.logger.debug(
-        `Created ability for user ${user.clerkId} ` +
-          `(global role: ${user.role}, ` +
-          `project role: ${projectMember?.role ?? 'none'}, ` +
-          `project: ${projectId ?? 'none'})`,
-      );
-    }
 
     return ability;
   }
@@ -91,9 +63,9 @@ export class CaslAbilityFactory {
     user: User,
     action: Action,
     subject: SubjectsFields,
-    projectMember?: ProjectMember | null,
+    projectMembers?: ProjectMember[],
   ): boolean {
-    const ability = this.createForUser(user, projectMember);
+    const ability = this.createForUser(user, projectMembers);
     return ability.can(action, subject);
   }
 }

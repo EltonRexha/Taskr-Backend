@@ -1,14 +1,17 @@
-// src/casl/policies/task.policy.ts
 import { BasePolicy } from './base.policy';
 import {
   AbilityBuilderType,
   AbilityContext,
   Action,
+  TypedAbilityBuilder,
 } from '../types/casl.types';
 
 export class TaskPolicy extends BasePolicy {
   define(builder: AbilityBuilderType, context: AbilityContext): void {
-    const { can, cannot } = builder;
+    // 1. Cast to our custom TypedAbilityBuilder for strict field checking
+    const { can, cannot } = builder as unknown as TypedAbilityBuilder;
+
+    const userId = context.user.clerkId;
 
     // Global admins can do everything
     if (this.isGlobalAdmin(context)) {
@@ -16,65 +19,74 @@ export class TaskPolicy extends BasePolicy {
       return;
     }
 
-    // Non-project members cannot access tasks
-    if (!this.hasProjectAccess(context)) {
+    // Safety check: if user isn't in any projects, they get no task permissions
+    if (!this.hasProjectMembers(context)) {
       return;
     }
 
-    const projectMember = context.projectMember!;
-    const userId = context.user.clerkId;
+    // Helper IDs from BasePolicy
+    const adminProjectIds = this.getAdminProjectIds(context);
+    const memberProjectIds = this.getMemberProjectIds(context);
+    const allAccessibleProjectIds = this.getAllAccessibleProjectIds(context);
 
-    // Project admins have full control
-    if (this.isProjectAdmin(context)) {
-      can(Action.MANAGE, 'TASK', { projectId: projectMember.projectId });
-      can(Action.ASSIGN, 'TASK', { projectId: projectMember.projectId });
-      can(Action.APPROVE, 'TASK', { projectId: projectMember.projectId });
-      can(Action.ARCHIVE, 'TASK', { projectId: projectMember.projectId });
-      can(Action.RESTORE, 'TASK', { projectId: projectMember.projectId });
-      return;
+    // --- READ PERMISSIONS ---
+    // All roles can view tasks in any project they belong to
+    can([Action.VIEW, Action.LIST, Action.READ], 'TASK', {
+      projectId: { in: allAccessibleProjectIds },
+    });
+
+    // --- ADMIN PERMISSIONS ---
+    if (this.hasAdminProjects(context)) {
+      can(
+        [
+          Action.MANAGE,
+          Action.ASSIGN,
+          Action.APPROVE,
+          Action.ARCHIVE,
+          Action.RESTORE,
+        ],
+        'TASK',
+        {
+          projectId: { in: adminProjectIds },
+        },
+      );
     }
 
-    // Regular members
-    if (this.isProjectMember(context)) {
-      // Can view all tasks in their project
-      can(Action.VIEW, 'TASK', { projectId: projectMember.projectId });
-      can(Action.LIST, 'TASK', { projectId: projectMember.projectId });
-      can(Action.READ, 'TASK', { projectId: projectMember.projectId });
-
-      // Can create new tasks
-      can(Action.CREATE, 'TASK', { projectId: projectMember.projectId });
-
-      // Can update tasks they created
-      can(Action.UPDATE, 'TASK', {
-        projectId: projectMember.projectId,
-        creatorId: userId,
+    // --- MEMBER PERMISSIONS ---
+    if (this.hasMemberProjects(context)) {
+      // 1. Can create new tasks in member projects
+      can(Action.CREATE, 'TASK', {
+        projectId: { in: memberProjectIds },
       });
 
-      // Can update tasks assigned to them (but not delete)
       can(Action.UPDATE, 'TASK', {
-        projectId: projectMember.projectId,
-        assigneeId: userId,
+        projectId: { in: memberProjectIds },
+        author: { is: { clerkId: { equals: userId } } },
       });
 
-      // Can delete only tasks they created (and not archived)
+      // 3. Can update tasks ASSIGNED to them
+      can(Action.UPDATE, 'TASK', {
+        projectId: { in: memberProjectIds },
+        assignedTo: {
+          some: {
+            user: { is: { clerkId: { equals: userId } } },
+          },
+        },
+      });
+
+      // 4. Can delete ONLY tasks they created
       can(Action.DELETE, 'TASK', {
-        projectId: projectMember.projectId,
-        creatorId: userId,
-        status: { $ne: 'ARCHIVED' },
+        projectId: { in: memberProjectIds },
+        author: { is: { clerkId: { equals: userId } } },
       });
 
-      // Can assign tasks to other project members
-      can(Action.ASSIGN, 'TASK', { projectId: projectMember.projectId });
+      // 5. General project participation
+      can([Action.ASSIGN, Action.COMMENT], 'TASK', {
+        projectId: { in: memberProjectIds },
+      });
 
-      // Can comment on all tasks
-      can(Action.COMMENT, 'TASK', { projectId: projectMember.projectId });
-
-      // Cannot archive or restore (admin only)
-      cannot(Action.ARCHIVE, 'TASK');
-      cannot(Action.RESTORE, 'TASK');
-
-      // Cannot approve (admin only)
-      cannot(Action.APPROVE, 'TASK');
+      // 6. Explicit Restrictions (Members cannot do these even if they created the task)
+      cannot([Action.ARCHIVE, Action.RESTORE, Action.APPROVE], 'TASK');
     }
   }
 }

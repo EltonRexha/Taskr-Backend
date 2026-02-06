@@ -3,55 +3,65 @@ import {
   AbilityBuilderType,
   AbilityContext,
   Action,
+  TypedAbilityBuilder,
 } from '../types/casl.types';
 
 export class SprintPolicy extends BasePolicy {
   define(builder: AbilityBuilderType, context: AbilityContext): void {
-    const { can } = builder;
+    const { can } = builder as unknown as TypedAbilityBuilder;
 
     if (this.isGlobalAdmin(context)) {
       this.grantFullAccess(builder, 'SPRINT');
       return;
     }
 
-    if (!this.hasProjectAccess(context)) {
+    if (!this.hasProjectMembers(context)) {
       return;
     }
 
-    const projectMember = context.projectMember!;
+    // Get project IDs by role using helper functions
+    const adminProjectIds = this.getAdminProjectIds(context);
+    const memberProjectIds = this.getMemberProjectIds(context);
+    const allAccessibleProjectIds = this.getAllAccessibleProjectIds(context);
 
-    // Both admins and members can view sprints
-    can(Action.VIEW, 'SPRINT', { projectId: projectMember.projectId });
-    can(Action.LIST, 'SPRINT', { projectId: projectMember.projectId });
-    can(Action.READ, 'SPRINT', { projectId: projectMember.projectId });
+    // All roles can view sprints in their projects
+    can(Action.VIEW, 'SPRINT', {
+      scrumProject: { id: { in: allAccessibleProjectIds } },
+      // Future: add kanbanProject check here
+    });
+    can(Action.LIST, 'SPRINT', {
+      scrumProject: { id: { in: allAccessibleProjectIds } },
+    });
+    can(Action.READ, 'SPRINT', {
+      scrumProject: { id: { in: allAccessibleProjectIds } },
+    });
 
-    if (this.isProjectAdmin(context)) {
-      // Admins can manage sprints
+    // Admin permissions
+    if (this.hasAdminProjects(context)) {
       can(Action.CREATE, 'SPRINT', {
-        projectId: projectMember.projectId,
+        scrumProject: { id: { in: adminProjectIds } },
       });
       can(Action.UPDATE, 'SPRINT', {
-        projectId: projectMember.projectId,
+        scrumProject: { id: { in: adminProjectIds } },
       });
       can(Action.DELETE, 'SPRINT', {
-        projectId: projectMember.projectId,
+        scrumProject: { id: { in: adminProjectIds } },
       });
       can(Action.ARCHIVE, 'SPRINT', {
-        projectId: projectMember.projectId,
+        scrumProject: { id: { in: adminProjectIds } },
       });
       can(Action.RESTORE, 'SPRINT', {
-        projectId: projectMember.projectId,
+        scrumProject: { id: { in: adminProjectIds } },
       });
     }
 
-    if (this.isProjectMember(context)) {
-      // Members can create sprints but not delete/archive
+    // Member permissions
+    if (this.hasMemberProjects(context)) {
       can(Action.CREATE, 'SPRINT', {
-        projectId: projectMember.projectId,
+        scrumProject: { id: { in: memberProjectIds } },
       });
       can(Action.UPDATE, 'SPRINT', {
-        projectId: projectMember.projectId,
-        creatorId: context.user.clerkId,
+        scrumProject: { id: { in: memberProjectIds } },
       });
     }
   }

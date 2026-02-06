@@ -66,12 +66,12 @@ model Epic {
 model ScrumProject {
   id           String        @id @default(uuid())
   backlog      Backlog       @relation(fields: [backlogId], references: [id])
-  backlogId    String        @map("backlog_id")
+  backlogId    String        @unique @map("backlog_id")
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
   draftSprints DraftSprint[]
   sprints      Sprint[]
-  projects     Project[]
+  projects     Project?
 
   @@map("scrum_projects")
 }
@@ -125,7 +125,7 @@ model Project {
   id             String          @id @default(uuid())
   name           String
   scrumProject   ScrumProject    @relation(fields: [scrumProjectId], references: [id])
-  scrumProjectId String          @map("scrum_project_id")
+  scrumProjectId String          @unique @map("scrum_project_id")
   projectType    ProjectType     @map("project_type")
   author         User?           @relation(fields: [userClerkId], references: [clerkId], onDelete: SetNull)
   userClerkId    String?         @map("user_clerk_id")

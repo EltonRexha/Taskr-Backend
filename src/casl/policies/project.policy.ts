@@ -1,14 +1,14 @@
-// src/casl/policies/project.policy.ts
 import {
   AbilityBuilderType,
   AbilityContext,
   Action,
+  TypedAbilityBuilder,
 } from '../types/casl.types';
 import { BasePolicy } from './base.policy';
 
 export class ProjectPolicy extends BasePolicy {
   define(builder: AbilityBuilderType, context: AbilityContext): void {
-    const { can } = builder;
+    const { can } = builder as unknown as TypedAbilityBuilder;
 
     // Global admins can do everything
     if (this.isGlobalAdmin(context)) {
@@ -22,33 +22,36 @@ export class ProjectPolicy extends BasePolicy {
     // All authenticated users can create projects
     can(Action.CREATE, 'PROJECT');
 
-    // Project-specific permissions
-    if (this.hasProjectAccess(context)) {
-      const projectMember = context.projectMember!;
+    const { projectMembers } = context;
+    if (!projectMembers || projectMembers.length === 0) {
+      return;
+    }
 
-      // Project admins
-      if (this.isProjectAdmin(context)) {
-        can(Action.UPDATE, 'PROJECT', { id: projectMember.projectId });
-        can(Action.DELETE, 'PROJECT', { id: projectMember.projectId });
-        can(Action.ARCHIVE, 'PROJECT', { id: projectMember.projectId });
-        can(Action.RESTORE, 'PROJECT', { id: projectMember.projectId });
-        can(Action.EXPORT, 'PROJECT', { id: projectMember.projectId });
+    // Get project IDs by role using helper functions
+    const adminProjectIds = this.getAdminProjectIds(context);
+    const memberProjectIds = this.getMemberProjectIds(context);
 
-        // Member management
-        can(Action.INVITE, 'PROJECT', { id: projectMember.projectId });
-        can(Action.REMOVE_MEMBER, 'PROJECT_MEMBER', {
-          projectId: projectMember.projectId,
-        });
-        can(Action.UPDATE_MEMBER_ROLE, 'PROJECT_MEMBER', {
-          projectId: projectMember.projectId,
-        });
-      }
+    // Grant admin permissions
+    if (this.hasAdminProjects(context)) {
+      can(Action.UPDATE, 'PROJECT', { id: { in: adminProjectIds } });
+      can(Action.DELETE, 'PROJECT', { id: { in: adminProjectIds } });
+      can(Action.ARCHIVE, 'PROJECT', { id: { in: adminProjectIds } });
+      can(Action.RESTORE, 'PROJECT', { id: { in: adminProjectIds } });
+      can(Action.EXPORT, 'PROJECT', { id: { in: adminProjectIds } });
 
-      // Regular members can view and export
-      if (this.isProjectMember(context)) {
-        can(Action.VIEW, 'PROJECT', { id: projectMember.projectId });
-        can(Action.EXPORT, 'PROJECT', { id: projectMember.projectId });
-      }
+      can(Action.INVITE, 'PROJECT', { id: { in: adminProjectIds } });
+      can(Action.REMOVE_MEMBER, 'PROJECT_MEMBER', {
+        projectId: { in: adminProjectIds },
+      });
+      can(Action.UPDATE_MEMBER_ROLE, 'PROJECT_MEMBER', {
+        projectId: { in: adminProjectIds },
+      });
+    }
+
+    // Grant member permissions
+    if (this.hasMemberProjects(context)) {
+      can(Action.VIEW, 'PROJECT', { id: { in: memberProjectIds } });
+      can(Action.EXPORT, 'PROJECT', { id: { in: memberProjectIds } });
     }
   }
 }

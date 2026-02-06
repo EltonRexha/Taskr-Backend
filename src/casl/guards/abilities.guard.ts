@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
   Logger,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CaslAbilityFactory } from '../factories/casl-ability.factory';
@@ -15,11 +16,11 @@ import {
   CHECK_ABILITY,
 } from '../decorators/check-abilities.decorator';
 import { DatabaseService } from 'src/database/database.service';
-import { ProjectMember, User } from 'prisma/generated/prisma/client';
+import { Project, ProjectMember, User } from 'prisma/generated/prisma/client';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/auth/decorators/public.decorator';
 import { subject } from '@casl/ability';
-import { SubjectsFields } from '../types/casl.types';
+import { SubjectsFields, PrismaSubjects, Action } from '../types/casl.types';
 
 /**
  * Guard to check CASL abilities before allowing access to routes
@@ -28,6 +29,7 @@ import { SubjectsFields } from '../types/casl.types';
  * - Validates user authentication
  * - Fetches project membership context
  * - Creates user-specific ability
+ * - Fetches subjects for instance-level checks
  * - Performs permission checks (including field-level)
  * - Attaches ability to request for use in handlers
  * - Comprehensive error handling and logging
@@ -44,37 +46,54 @@ export class AbilitiesGuard implements CanActivate {
 
   /**
    * Extract subject type string from SubjectsFields
+   * @throws InternalServerErrorException if subject type is invalid
    */
-  private getSubjectType(subject: SubjectsFields): string {
-    // CASL adds __caslSubjectType__ property to Model types
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    return (subject as any).__caslSubjectType__;
+  private getSubjectType(subjectOrInstance: SubjectsFields): string {
+    // If it's already a string, return it
+    if (typeof subjectOrInstance === 'string') {
+      return subjectOrInstance;
+    }
+
+    // CASL adds __caslSubjectType__ property to subject instances
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const subjectType = (subjectOrInstance as any).__caslSubjectType__;
+
+    if (!subjectType || typeof subjectType !== 'string') {
+      this.logger.error('Invalid subject type - missing __caslSubjectType__', {
+        subject: subjectOrInstance,
+      });
+      throw new InternalServerErrorException(
+        'Invalid permission configuration',
+      );
+    }
+
+    return subjectType;
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check if route is marked as public
     const publicCheck = this.reflector.get<boolean>(
       IS_PUBLIC_KEY,
       context.getHandler(),
     );
 
-    console.log({ publicCheck });
-
     if (publicCheck) {
       return true;
     }
 
+    // Get ability check configuration from decorator
     const abilityCheck = this.reflector.get<AbilityCheck>(
       CHECK_ABILITY,
       context.getHandler(),
     );
 
-    const subjectName = this.getSubjectType(abilityCheck.subject);
-
     if (!abilityCheck) {
       throw new Error(
-        'Ability check not found in route handler, if you intended to not use abilities then mark it with @Public to ignore checks',
+        'Ability check not found in route handler. If you intended to not use abilities then mark it with @Public() to ignore checks',
       );
     }
+
+    const subjectName = this.getSubjectType(abilityCheck.subject);
 
     const request = context.switchToHttp().getRequest<Request>();
     const user: User | undefined = request.user;
@@ -88,65 +107,97 @@ export class AbilitiesGuard implements CanActivate {
       );
     }
 
-    try {
-      const projectId = abilityCheck.getProjectId
-        ? await Promise.resolve(abilityCheck.getProjectId(request))
-        : undefined;
+    let projectMembers: ProjectMember[] = [];
 
-      let projectMember: ProjectMember | null = null;
+    // Fetch the subject from database
+    let fetchedSubject: {
+      subject: PrismaSubjects;
+      project: Project | null;
+    } | null = null;
 
-      if (projectId) {
-        projectMember = await this.getProjectMember(user.clerkId, projectId);
+    if (abilityCheck.getResourceId) {
+      const resourceId = abilityCheck.getResourceId(request);
+      if (resourceId) {
+        fetchedSubject = await this.fetchSubject(subjectName, resourceId);
       }
+    }
 
+    if (!fetchedSubject) {
+      throw new ForbiddenException('Resource not found');
+    }
+
+    // Fetch user's project memberships
+    if (
+      abilityCheck.action === Action.LIST ||
+      !fetchedSubject ||
+      !fetchedSubject.project?.id
+    ) {
+      projectMembers = await this.getProjectMembersByUser(user.clerkId);
+    } else {
+      const projectMember = await this.getProjectMember(
+        user.clerkId,
+        fetchedSubject.project.id,
+      );
+      if (projectMember) {
+        projectMembers = [projectMember];
+      }
+    }
+
+    try {
+      // Create ability for this user
       const ability = this.caslAbilityFactory.createForUser(
         user,
-        projectMember,
-        projectId,
+        projectMembers,
       );
 
+      // Attach ability to request for use in handlers
       request.ability = ability;
 
       let canPerform: boolean;
 
-      if (abilityCheck.getSubject) {
+      // If getResourceId is specified, fetch the subject instance
+      if (abilityCheck.getResourceId) {
         try {
-          const fetchedSubject = await Promise.resolve(
-            abilityCheck.getSubject(request),
-          );
+          // Extract resource ID using the provided callback
+          const resourceId = abilityCheck.getResourceId(request);
 
-          if (!fetchedSubject) {
-            throw new ForbiddenException('Resource not found');
+          if (!resourceId) {
+            throw new BadRequestException('Resource ID not found in request');
           }
 
+          // Check permission on the specific resource instance
           canPerform = ability.can(
             abilityCheck.action,
-            subject(subjectName, fetchedSubject) as SubjectsFields,
+            subject(subjectName, fetchedSubject.subject) as SubjectsFields,
           );
         } catch (error) {
+          // Re-throw ForbiddenException and BadRequestException as-is
+          if (
+            error instanceof ForbiddenException ||
+            error instanceof BadRequestException
+          ) {
+            throw error;
+          }
+
           this.logger.error('Error fetching subject for ability check:', error);
           throw new InternalServerErrorException(
             'Error validating permissions',
           );
         }
       } else {
+        // Class-level check (no specific resource instance)
         canPerform = ability.can(abilityCheck.action, abilityCheck.subject);
       }
 
       if (!canPerform) {
-        const errorMessage = this.buildErrorMessage(
-          abilityCheck,
-          user,
-          projectId,
-          projectMember,
-        );
+        const errorMessage = this.buildErrorMessage(abilityCheck, subjectName);
 
-        this.logger.warn(
-          `Permission denied: User ${user.clerkId} ` +
-            `(role: ${user.role}, project role: ${projectMember?.role ?? 'none'}) ` +
-            `attempted to ${abilityCheck.action} ${subjectName} ` +
-            `in project ${projectId ?? 'none'}`,
-        );
+        this.logger.warn('Authorization denied', {
+          userId: user.clerkId,
+          action: abilityCheck.action,
+          subject: subjectName,
+          route: context.getHandler().name,
+        });
 
         throw new ForbiddenException(errorMessage);
       }
@@ -164,6 +215,7 @@ export class AbilitiesGuard implements CanActivate {
       if (
         error instanceof UnauthorizedException ||
         error instanceof ForbiddenException ||
+        error instanceof BadRequestException ||
         error instanceof InternalServerErrorException
       ) {
         throw error;
@@ -178,8 +230,108 @@ export class AbilitiesGuard implements CanActivate {
   }
 
   /**
-   * Fetch project member with caching consideration
+   * Fetch subject from database based on type
+   * Only fetches fields needed for permission checks
+   * @throws Error if database query fails
    */
+  private async fetchSubject(
+    subjectType: string,
+    id: string,
+  ): Promise<{ subject: PrismaSubjects; project: Project | null } | null> {
+    try {
+      let subject: PrismaSubjects | null = null;
+      let project: Project | null = null;
+
+      switch (subjectType) {
+        case 'TASK': {
+          const task = await this.prisma.task.findUnique({
+            where: { id },
+            include: {
+              author: true,
+              project: true,
+            },
+          });
+          subject = task;
+          // Accessing project via the synced include
+          project = task?.project || null;
+          break;
+        }
+
+        case 'PROJECT': {
+          subject = await this.prisma.project.findUnique({
+            where: { id },
+          });
+          project = subject as Project;
+          break;
+        }
+
+        case 'SPRINT': {
+          const sprint = await this.prisma.sprint.findUnique({
+            where: { id },
+            include: {
+              scrumProject: {
+                include: {
+                  projects: true,
+                },
+              },
+            },
+          });
+          subject = sprint;
+          project = sprint?.scrumProject?.projects || null;
+          break;
+        }
+
+        case 'PROJECT_MEMBER': {
+          const projectMember = await this.prisma.projectMember.findUnique({
+            where: { id },
+            include: {
+              project: true,
+            },
+          });
+
+          subject = projectMember;
+          project = projectMember?.project || null;
+          break;
+        }
+
+        default:
+          this.logger.error(`Unknown subject type: ${subjectType}`);
+          throw new InternalServerErrorException(
+            'Invalid permission configuration',
+          );
+      }
+
+      if (!subject) return null;
+
+      return { subject, project };
+    } catch (error) {
+      this.logger.error(`Error fetching ${subjectType} with id ${id}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch project members for a user
+   * @throws InternalServerErrorException if database query fails
+   */
+  private async getProjectMembersByUser(
+    userClerkId: string,
+  ): Promise<ProjectMember[]> {
+    try {
+      return await this.prisma.projectMember.findMany({
+        where: {
+          userClerkId: userClerkId,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error fetching project members for user ${userClerkId}:`,
+        error,
+      );
+      throw new InternalServerErrorException('Unable to verify permissions');
+    }
+  }
+
   private async getProjectMember(
     userClerkId: string,
     projectId: string,
@@ -188,43 +340,54 @@ export class AbilitiesGuard implements CanActivate {
       return await this.prisma.projectMember.findUnique({
         where: {
           userClerkId_projectId: {
-            projectId,
             userClerkId,
+            projectId,
           },
         },
       });
     } catch (error) {
       this.logger.error(
-        `Error fetching project member for user ${userClerkId} in project ${projectId}:`,
+        `Error fetching project members for user ${userClerkId}:`,
         error,
       );
-      return null;
+      throw new InternalServerErrorException('Unable to verify permissions');
     }
   }
 
   /**
-   * Build a user-friendly error message
+   * Build a user-friendly error message based on context
+   * Provides helpful feedback about why permission was denied
    */
   private buildErrorMessage(
     abilityCheck: AbilityCheck,
-    user: User,
-    projectId?: string,
-    projectMember?: ProjectMember | null,
+    subjectName: string,
   ): string {
     const action = abilityCheck.action;
-    const subject = this.getSubjectType(abilityCheck.subject);
 
-    // Base message
-    let message = `You do not have permission to ${action} ${subject}`;
+    // Map technical actions to user-friendly verbs
+    const actionMap: Record<string, string> = {
+      create: 'create',
+      read: 'view',
+      update: 'modify',
+      delete: 'delete',
+      manage: 'manage',
+      list: 'list',
+      view: 'view',
+      archive: 'archive',
+      restore: 'restore',
+      invite: 'invite members to',
+      remove_member: 'remove members from',
+      update_member_role: 'update member roles in',
+      assign: 'assign',
+      approve: 'approve',
+      comment: 'comment on',
+      export: 'export',
+      import: 'import',
+    };
 
-    if (projectId && !projectMember) {
-      message += `. You are not a member of this project`;
-    } else if (projectId && projectMember) {
-      message += ` in this project. Your role (${projectMember.role}) does not permit this action`;
-    } else if (user.role !== 'ADMIN') {
-      message += `. This action may require higher privileges`;
-    }
+    const friendlyAction = actionMap[action] || action;
+    const friendlySubject = subjectName.toLowerCase().replace('_', ' ');
 
-    return message;
+    return `You do not have permission to ${friendlyAction} this ${friendlySubject}`;
   }
 }

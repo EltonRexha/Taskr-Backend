@@ -6,6 +6,7 @@ import {
   Action,
   SubjectsFields,
 } from '../types/casl.types';
+import { ProjectMember } from 'prisma/generated/prisma/client';
 
 /**
  * Base policy with common permission patterns
@@ -62,21 +63,90 @@ export abstract class BasePolicy implements Policy {
   /**
    * Check if user is project admin
    */
-  protected isProjectAdmin(context: AbilityContext): boolean {
-    return context.projectMember?.role === 'ADMIN';
+  protected isProjectAdmin(projectMember: ProjectMember): boolean {
+    return projectMember.role === 'ADMIN';
+  }
+
+  /**
+   * Check if user is project viewer
+   */
+  protected isProjectViewer(projectMember: ProjectMember): boolean {
+    return projectMember.role === 'VIEWER';
   }
 
   /**
    * Check if user is project member
    */
-  protected isProjectMember(context: AbilityContext): boolean {
-    return context.projectMember?.role === 'MEMBER';
+  protected isProjectMember(projectMember: ProjectMember): boolean {
+    return projectMember.role === 'MEMBER';
   }
 
   /**
    * Check if user has any project role
    */
-  protected hasProjectAccess(context: AbilityContext): boolean {
-    return !!context.projectMember;
+  protected hasProjectMembers(context: AbilityContext): boolean {
+    return !!context.projectMembers;
+  }
+
+  /**
+   * Get project IDs where user has admin role
+   */
+  protected getAdminProjectIds(context: AbilityContext): string[] {
+    if (!context.projectMembers) return [];
+    return context.projectMembers
+      .filter((pm) => this.isProjectAdmin(pm))
+      .map((pm) => pm.projectId);
+  }
+
+  /**
+   * Get project IDs where user has member role
+   */
+  protected getMemberProjectIds(context: AbilityContext): string[] {
+    if (!context.projectMembers) return [];
+    return context.projectMembers
+      .filter((pm) => this.isProjectMember(pm))
+      .map((pm) => pm.projectId);
+  }
+
+  /**
+   * Get project IDs where user has viewer role
+   */
+  protected getViewerProjectIds(context: AbilityContext): string[] {
+    if (!context.projectMembers) return [];
+    return context.projectMembers
+      .filter((pm) => this.isProjectViewer(pm))
+      .map((pm) => pm.projectId);
+  }
+
+  /**
+   * Check if user has admin projects
+   */
+  protected hasAdminProjects(context: AbilityContext): boolean {
+    return this.getAdminProjectIds(context).length > 0;
+  }
+
+  /**
+   * Check if user has member projects
+   */
+  protected hasMemberProjects(context: AbilityContext): boolean {
+    return this.getMemberProjectIds(context).length > 0;
+  }
+
+  /**
+   * Check if user has viewer projects
+   */
+  protected hasViewerProjects(context: AbilityContext): boolean {
+    return this.getViewerProjectIds(context).length > 0;
+  }
+
+  /**
+   * Get all project IDs where user has any role (admin, member, or viewer)
+   */
+  protected getAllAccessibleProjectIds(context: AbilityContext): string[] {
+    const adminProjectIds = this.getAdminProjectIds(context);
+    const memberProjectIds = this.getMemberProjectIds(context);
+    const viewerProjectIds = this.getViewerProjectIds(context);
+
+    return [...adminProjectIds, ...memberProjectIds, ...viewerProjectIds];
   }
 }
