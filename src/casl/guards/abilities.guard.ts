@@ -21,6 +21,7 @@ import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/auth/decorators/public.decorator';
 import { subject } from '@casl/ability';
 import { SubjectsFields, PrismaSubjects, Action } from '../types/casl.types';
+import { RedisCacheService } from 'src/redis/redis.service';
 
 /**
  * Guard to check CASL abilities before allowing access to routes
@@ -42,6 +43,7 @@ export class AbilitiesGuard implements CanActivate {
     private reflector: Reflector,
     private prisma: DatabaseService,
     private caslAbilityFactory: CaslAbilityFactory,
+    private redisCache: RedisCacheService,
   ) {}
 
   /**
@@ -122,10 +124,6 @@ export class AbilitiesGuard implements CanActivate {
       }
     }
 
-    if (!fetchedSubject) {
-      throw new ForbiddenException('Resource not found');
-    }
-
     // Fetch user's project memberships
     if (
       abilityCheck.action === Action.LIST ||
@@ -158,6 +156,9 @@ export class AbilitiesGuard implements CanActivate {
       // If getResourceId is specified, fetch the subject instance
       if (abilityCheck.getResourceId) {
         try {
+          if (!fetchedSubject) {
+            throw new ForbiddenException('Resource not found');
+          }
           // Extract resource ID using the provided callback
           const resourceId = abilityCheck.getResourceId(request);
 
@@ -271,13 +272,13 @@ export class AbilitiesGuard implements CanActivate {
             include: {
               scrumProject: {
                 include: {
-                  projects: true,
+                  project: true,
                 },
               },
             },
           });
           subject = sprint;
-          project = sprint?.scrumProject?.projects || null;
+          project = sprint?.scrumProject?.project || null;
           break;
         }
 
@@ -318,11 +319,24 @@ export class AbilitiesGuard implements CanActivate {
     userClerkId: string,
   ): Promise<ProjectMember[]> {
     try {
-      return await this.prisma.projectMember.findMany({
-        where: {
-          userClerkId: userClerkId,
-        },
-      });
+      const projectMembers = await this.redisCache.get(
+        `projectMembers:${userClerkId}`,
+      );
+
+      if (!projectMembers) {
+        const fetchedProjectMembers = await this.prisma.projectMember.findMany({
+          where: {
+            userClerkId: userClerkId,
+          },
+        });
+        await this.redisCache.set(
+          `projectMembers:${userClerkId}`,
+          fetchedProjectMembers,
+        );
+        return fetchedProjectMembers;
+      }
+
+      return projectMembers as ProjectMember[];
     } catch (error) {
       this.logger.error(
         `Error fetching project members for user ${userClerkId}:`,

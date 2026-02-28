@@ -71,7 +71,7 @@ model ScrumProject {
   updatedAt    DateTime      @updatedAt @map("updated_at")
   draftSprints DraftSprint[]
   sprints      Sprint[]
-  projects     Project?
+  project      Project?
 
   @@map("scrum_projects")
 }

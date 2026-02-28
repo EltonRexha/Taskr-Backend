@@ -3,9 +3,10 @@ import { UsersModule } from 'src/users/users.module';
 import { ClerkModule } from 'src/clerk/clerk.module';
 import { AbilitiesGuard } from './guards/abilities.guard';
 import { CaslAbilityFactory } from './factories/casl-ability.factory';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
-  imports: [UsersModule, ClerkModule],
+  imports: [RedisModule, UsersModule, ClerkModule],
   providers: [AbilitiesGuard, CaslAbilityFactory],
   exports: [AbilitiesGuard, CaslAbilityFactory],
 })

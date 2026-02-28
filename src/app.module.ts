@@ -13,10 +13,26 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { AbilitiesGuard } from './casl/guards/abilities.guard';
 import { CaslModule } from './casl/casl.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis, { Keyv } from '@keyv/redis';
+import { CacheableMemory } from 'cacheable';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: () => {
+        return {
+          stores: [
+            new Keyv({
+              store: new CacheableMemory({ ttl: 60000, lruSize: 5000 }),
+            }),
+            new KeyvRedis(process.env.REDIS_URL as string),
+          ],
+        };
+      },
+    }),
     UsersModule,
     DatabaseModule,
     WebhooksModule,

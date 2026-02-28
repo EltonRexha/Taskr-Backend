@@ -8,17 +8,23 @@ import {
   Delete,
   Req,
   Query,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import type { Request } from 'express';
 import { ProjectQueryDto } from './dto/query-projects.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectsResponseDto } from './dto/response-project.dto';
-import { Public } from 'src/auth/decorators/public.decorator';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { CanList } from 'src/casl/decorators/check-abilities.decorator';
+import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
 @Controller('projects')
+@UseInterceptors(CustomCacheInterceptor)
+@UseGuards(AuthGuard)
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
@@ -27,8 +33,8 @@ export class ProjectsController {
     return this.projectsService.create();
   }
 
-  @Public()
   @Get()
+  @CanList('PROJECT')
   @ApiOkResponse({ type: ProjectsResponseDto })
   async findAll(@Req() req: Request, @Query() query: ProjectQueryDto) {
     const projects = await this.projectsService.findAll(req.user, query);
