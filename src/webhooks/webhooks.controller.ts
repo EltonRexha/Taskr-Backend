@@ -9,6 +9,7 @@ import { WebhooksService } from './webhooks.service';
 import { verifyWebhook } from '@clerk/backend/webhooks';
 import { expressToFetchRequest } from './express-to-fetch';
 import type { Request } from 'express';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('webhooks')
 export class WebhooksController {
@@ -17,8 +18,12 @@ export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
   @Post('/clerk')
+  @Public()
   async handleClerk(@Req() req: Request) {
     try {
+      this.logger.error('Received Clerk webhook', {
+        headers: req.headers,
+      });
       const fetchReq = expressToFetchRequest(req);
 
       const event = await verifyWebhook(fetchReq, {

@@ -184,14 +184,14 @@ async function main() {
     prisma.projectMember.create({
       data: {
         userClerkId: users[1].clerkId,
-        role: ProjectMemberRole.USER,
+        role: ProjectMemberRole.MEMBER,
         projectId: projects[0].id,
       },
     }),
     prisma.projectMember.create({
       data: {
         userClerkId: users[2].clerkId,
-        role: ProjectMemberRole.USER,
+        role: ProjectMemberRole.VIEWER,
         projectId: projects[0].id,
       },
     }),
@@ -205,7 +205,7 @@ async function main() {
     prisma.projectMember.create({
       data: {
         userClerkId: users[3].clerkId,
-        role: ProjectMemberRole.USER,
+        role: ProjectMemberRole.VIEWER,
         projectId: projects[1].id,
       },
     }),

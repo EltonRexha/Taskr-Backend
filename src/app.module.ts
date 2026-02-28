@@ -8,18 +8,51 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { ClerkModule } from './clerk/clerk.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/guards/auth.guard';
+import { AbilitiesGuard } from './casl/guards/abilities.guard';
+import { CaslModule } from './casl/casl.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis, { Keyv } from '@keyv/redis';
+import { CacheableMemory } from 'cacheable';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: () => {
+        return {
+          stores: [
+            new Keyv({
+              store: new CacheableMemory({ ttl: 60000, lruSize: 5000 }),
+            }),
+            new KeyvRedis(process.env.REDIS_URL as string),
+          ],
+        };
+      },
+    }),
     UsersModule,
     DatabaseModule,
     WebhooksModule,
     ClerkModule,
     ProjectsModule,
     TasksModule,
+    AuthModule,
+    CaslModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AbilitiesGuard,
+    },
+  ],
 })
 export class AppModule {}
