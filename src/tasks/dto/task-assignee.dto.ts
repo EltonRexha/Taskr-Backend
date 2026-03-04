@@ -4,12 +4,12 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 class UserDto {
   @ApiProperty({ example: 'john.doe@example.com' })
   @IsEmail()
-  email: string;
+  email!: string;
 
   @ApiProperty({ example: 'John' })
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  firstName!: string;
 
   @ApiProperty({ example: 'Doe', nullable: true, required: false })
   @IsString()
@@ -22,10 +22,10 @@ class UserDto {
   })
   @IsString()
   @IsOptional()
-  profileImage: string;
+  profileImage!: string;
 }
 
 export class AssignedToDto {
   @ApiProperty({ type: UserDto })
-  user: UserDto;
+  user!: UserDto;
 }

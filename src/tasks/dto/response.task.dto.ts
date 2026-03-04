@@ -4,8 +4,8 @@ import { ResponsePaginationDto } from 'src/common/dto/response-pagination.dto';
 
 export class TasksResponseDto {
   @ApiProperty({ type: [TaskDto] })
-  tasks: TaskDto[];
+  tasks!: TaskDto[];
 
   @ApiProperty({ type: ResponsePaginationDto })
-  metadata: ResponsePaginationDto;
+  metadata!: ResponsePaginationDto;
 }

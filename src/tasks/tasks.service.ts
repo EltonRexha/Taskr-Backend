@@ -15,6 +15,7 @@ import {
 import { Prisma, User } from '../../prisma/generated/prisma/client';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { keysToCamel } from 'src/common/utils/snake-to-camel.util';
+import { Project } from 'prisma/generated/prisma/browser';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -95,7 +96,7 @@ export class TasksService {
 
   constructor(
     private readonly paginationService: PaginatedService,
-    private readonly prisma: DatabaseService,
+    private readonly databaseService: DatabaseService,
   ) {}
 
   create() {
@@ -167,14 +168,14 @@ export class TasksService {
 
       // Fetch tasks and count in parallel for better performance
       const [tasks, tasksCount] = await Promise.all([
-        this.prisma.task.findMany({
+        this.databaseService.task.findMany({
           where: whereClause,
           select: this.TASK_SELECT,
           skip,
           take,
           orderBy: keysToCamel(sortByField || {}),
         }),
-        this.prisma.task.count({ where: whereClause }),
+        this.databaseService.task.count({ where: whereClause }),
       ]);
 
       const transformedTasks = tasks.map((task) => ({
@@ -196,6 +197,79 @@ export class TasksService {
 
       throw new InternalServerErrorException('Failed to fetch tasks');
     }
+  }
+
+  async getTasksSummary(user: User, projectId: string) {
+    const project = await this.databaseService.project.findFirst({
+      where: {
+        id: projectId,
+        projectMembers: {
+          some: {
+            userClerkId: user.clerkId,
+          },
+        },
+      },
+      include: {
+        projectMembers: true,
+      },
+    });
+
+    if (!project) {
+      throw new BadRequestException('Project not found');
+    }
+
+    if (project.projectType === ProjectType.SCRUM) {
+      return await this.getScrumTasksSummary(project);
+    }
+  }
+
+  private async getScrumTasksSummary(
+    project: Project & { projectMembers: { id: string }[] },
+  ) {
+    const tasks = await this.databaseService.task.findMany({
+      where: {
+        projectId: project.id,
+        scrumTask: {
+          isNot: null,
+        },
+      },
+      select: {
+        dueDate: true,
+        scrumTask: {
+          select: {
+            status: true,
+          },
+        },
+      },
+    });
+
+    const now = new Date();
+
+    const baseSummary = Object.values(ScrumTaskStatus).reduce(
+      (acc, status) => {
+        acc[status] = 0;
+        return acc;
+      },
+      {} as Record<ScrumTaskStatus, number>,
+    );
+
+    let overdueTasks = 0;
+    for (const task of tasks) {
+      const status = task.scrumTask?.status;
+      if (!status) continue;
+      const isOverdue = task.dueDate < now && status !== ScrumTaskStatus.DONE;
+      if (isOverdue) {
+        overdueTasks += 1;
+        continue;
+      }
+      baseSummary[status] += 1;
+    }
+
+    return {
+      ...baseSummary,
+      overdueTasks,
+      memberCount: project.projectMembers.length,
+    };
   }
 
   findOne(id: number) {

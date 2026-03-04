@@ -5,35 +5,35 @@ import { AssignedToDto } from './task-assignee.dto';
 
 export class TaskDto {
   @ApiProperty()
-  id: string;
+  id!: string;
 
   @ApiProperty()
-  description: string;
+  description!: string;
 
   @ApiProperty()
-  title: string;
+  title!: string;
 
   @ApiProperty()
-  label: string;
+  label!: string;
 
   @ApiProperty()
-  priority: string;
+  priority!: string;
 
   @ApiProperty()
-  startDate: string;
+  startDate!: string;
 
   @ApiProperty()
-  dueDate: string;
+  dueDate!: string;
 
   @ApiProperty()
-  createdAt: string;
+  createdAt!: string;
 
   @ApiProperty()
-  updatedAt: string;
+  updatedAt!: string;
 
   @ApiProperty({ type: [AssignedToDto], description: 'List of assigned users' })
-  assignedTo: AssignedToDto[];
+  assignedTo!: AssignedToDto[];
 
-  @ApiProperty({ type: TaskProjectDto }) project: TaskProjectDto;
+  @ApiProperty({ type: TaskProjectDto }) project!: TaskProjectDto;
   @ApiPropertyOptional({ type: TaskMetaDto }) metaData?: TaskMetaDto;
 }
