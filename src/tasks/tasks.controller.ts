@@ -8,22 +8,24 @@ import {
   Delete,
   Query,
   Req,
-  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { TaskQueryDto } from './dto/query-tasks.dto';
 import type { Request } from 'express';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TasksResponseDto } from './dto/response.task.dto';
-import { AbilitiesGuard } from 'src/casl/guards/abilities.guard';
 import {
   CanList,
   CanUpdate,
 } from 'src/casl/decorators/check-abilities.decorator';
+import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
+import TaskSummaryResponseDto from './dto/response.task-summary.dto';
+import { TaskSummaryQueryDto } from './dto/query-task-summary.dto';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
-@UseGuards(AbilitiesGuard)
+@UseInterceptors(CustomCacheInterceptor)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -34,7 +36,7 @@ export class TasksController {
   }
 
   @Get()
-  @CanList('PROJECT')
+  @CanList('TASK')
   @ApiOkResponse({ type: TasksResponseDto })
   async findAll(@Req() req: Request, @Query() query: TaskQueryDto) {
     const tasks = await this.tasksService.findAll(req.user, query);
@@ -43,6 +45,16 @@ export class TasksController {
       tasks: tasks.data,
       metadata: tasks.meta,
     };
+  }
+
+  @Get('summary')
+  @CanList('TASK')
+  @ApiOkResponse({ type: TaskSummaryResponseDto })
+  async getTasksSummary(
+    @Req() req: Request,
+    @Query() query: TaskSummaryQueryDto,
+  ) {
+    return this.tasksService.getTasksSummary(req.user, query.projectId);
   }
 
   @Get(':id')

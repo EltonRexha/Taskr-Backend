@@ -8,7 +8,6 @@ import {
   Delete,
   Req,
   Query,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
@@ -16,7 +15,6 @@ import type { Request } from 'express';
 import { ProjectQueryDto } from './dto/query-projects.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectsResponseDto } from './dto/response-project.dto';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { CanList } from 'src/casl/decorators/check-abilities.decorator';
 import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
 
@@ -24,7 +22,6 @@ import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.int
 @ApiBearerAuth()
 @Controller('projects')
 @UseInterceptors(CustomCacheInterceptor)
-@UseGuards(AuthGuard)
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 

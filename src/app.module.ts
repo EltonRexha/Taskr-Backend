@@ -17,6 +17,10 @@ import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis, { Keyv } from '@keyv/redis';
 import { CacheableMemory } from 'cacheable';
 
+const CACHABLE_MEMORY_TTL_MS = 10000; // 10 seconds
+const CACHABLE_MEMORY_LRU_SIZE = 5000; // Max 5000 items in LRU cache
+const REDIS_TTL_MS = 60000; // 60 seconds
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -26,9 +30,17 @@ import { CacheableMemory } from 'cacheable';
         return {
           stores: [
             new Keyv({
-              store: new CacheableMemory({ ttl: 60000, lruSize: 5000 }),
+              store: new CacheableMemory({
+                ttl: CACHABLE_MEMORY_TTL_MS,
+                lruSize: CACHABLE_MEMORY_LRU_SIZE,
+              }),
+              ttl: CACHABLE_MEMORY_TTL_MS,
             }),
-            new KeyvRedis(process.env.REDIS_URL as string),
+
+            new Keyv({
+              store: new KeyvRedis(process.env.REDIS_URL as string),
+              ttl: REDIS_TTL_MS,
+            }),
           ],
         };
       },

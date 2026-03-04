@@ -5,8 +5,8 @@ export class TaskMetaDto {
   id: string;
 
   @ApiProperty()
-  status: string;
+  status!: string;
 
   @ApiProperty()
-  type: string;
+  type!: string;
 }
