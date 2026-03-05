@@ -19,3 +19,4 @@ export class ResponsePaginationDto {
   @ApiProperty({ description: 'Whether a previous page exists' })
   hasPreviousPage: boolean;
 }
+

@@ -39,3 +39,4 @@ class InviteMemberDto {
   @ApiProperty({ description: 'The role of the member to invite' })
   role: ProjectMemberRole;
 }
+

@@ -7,3 +7,4 @@ export class TaskSummaryQueryDto {
   @ApiProperty({ description: 'Project ID' })
   projectId: string;
 }
+

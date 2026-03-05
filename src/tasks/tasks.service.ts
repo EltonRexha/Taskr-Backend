@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { TaskQueryDto } from './dto/query-tasks.dto';
+import { TaskQueryDto } from './dto/query/query-tasks.dto';
 import { DatabaseService } from 'src/database/database.service';
 import {
   ScrumTaskStatus,

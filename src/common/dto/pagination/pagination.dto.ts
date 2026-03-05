@@ -17,3 +17,4 @@ export class PaginationDto {
   @ApiPropertyOptional({ description: 'Number of items per page', default: 10 })
   limit?: number = 10;
 }
+

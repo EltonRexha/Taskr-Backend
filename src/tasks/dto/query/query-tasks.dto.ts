@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsArray, IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from 'src/common/dto/pagination/pagination.dto';
 import { transformToUtcDate } from 'src/common/utils/transform-to-utc-date';
 import {
   ProjectType,
@@ -137,3 +137,4 @@ export class TaskQueryDto extends PaginationDto {
   })
   sort_by?: string[];
 }
+

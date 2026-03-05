@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProjectDto } from './project.dto';
-import { ResponsePaginationDto } from 'src/common/dto/response-pagination.dto';
+import { ProjectDto } from '../model/project.dto';
+import { ResponsePaginationDto } from 'src/common/dto/pagination/pagination-response.dto';
 
 export class ProjectsResponseDto {
   @ApiProperty({ type: [ProjectDto] })
@@ -9,3 +9,4 @@ export class ProjectsResponseDto {
   @ApiProperty({ type: ResponsePaginationDto })
   metadata: ResponsePaginationDto;
 }
+
