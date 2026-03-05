@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TaskProjectDto } from './task-project.dto';
 import { TaskMetaDto } from './task-meta.dto';
 import { AssignedToDto } from './task-assignee.dto';
+import { TaskLabel, TaskUrgency } from 'prisma/generated/prisma/enums';
 
 export class TaskDto {
   @ApiProperty()
@@ -14,10 +15,10 @@ export class TaskDto {
   title!: string;
 
   @ApiProperty()
-  label!: string;
+  label!: TaskLabel;
 
   @ApiProperty()
-  priority!: string;
+  priority!: TaskUrgency;
 
   @ApiProperty()
   startDate!: string;

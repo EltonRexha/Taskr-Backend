@@ -7,8 +7,6 @@ import {
 import { TaskQueryDto } from './dto/query-tasks.dto';
 import { DatabaseService } from 'src/database/database.service';
 import {
-  TaskLabel,
-  TaskUrgency,
   ScrumTaskStatus,
   ProjectType,
 } from '../../prisma/generated/prisma/enums';
@@ -122,12 +120,6 @@ export class TasksService {
         type,
         sort_by,
       } = taskQueryDto;
-
-      // Validate and normalize inputs
-      const taskLabel = this.validateTaskLabel(label);
-      const taskPriority = this.validateTaskPriority(priority);
-      const projectType = this.validateProjectType(type);
-      const taskStatus = this.validateScrumTaskStatus(status);
       const sortByField = this.validateSortBy(sort_by);
 
       // Build reusable where clause
@@ -136,8 +128,8 @@ export class TasksService {
           description: description
             ? { contains: description, mode: 'insensitive' }
             : undefined,
-          label: taskLabel,
-          priority: taskPriority,
+          label,
+          priority,
           project: {
             id: project_id,
             name: project_name
@@ -148,7 +140,7 @@ export class TasksService {
                 userClerkId: user.clerkId,
               },
             },
-            projectType: projectType,
+            projectType: type,
           },
           startDate: start_date
             ? start_date
@@ -162,7 +154,7 @@ export class TasksService {
             : due_date_lte
               ? { lte: due_date_lte }
               : undefined,
-          ...this.buildStatusFilter(taskStatus),
+          ...this.buildStatusFilter(status),
         },
       };
 
@@ -391,86 +383,7 @@ export class TasksService {
   }
 
   /**
-   * Validates and normalizes a task label string.
-   *
-   * @param label - The label string to validate
-   * @returns Normalized TaskLabel enum value, or undefined if no label provided
-   * @throws BadRequestException if the label is invalid
+   * Enum string validation for label, priority, project type, and status
+   * is now handled at the DTO level using class-validator and transformers.
    */
-  private validateTaskLabel(label?: string): TaskLabel | undefined {
-    if (!label) return undefined;
-
-    const normalized = label.toUpperCase();
-    if (!Object.values(TaskLabel).includes(normalized as TaskLabel)) {
-      throw new BadRequestException(
-        `Invalid task label: ${label}. Valid values are: ${Object.values(TaskLabel).join(', ')}`,
-      );
-    }
-
-    return normalized as TaskLabel;
-  }
-
-  /**
-   * Validates and normalizes a task priority string.
-   *
-   * @param priority - The priority string to validate
-   * @returns Normalized TaskUrgency enum value, or undefined if no priority provided
-   * @throws BadRequestException if the priority is invalid
-   */
-  private validateTaskPriority(priority?: string): TaskUrgency | undefined {
-    if (!priority) return undefined;
-
-    const normalized = priority.toUpperCase();
-    if (!Object.values(TaskUrgency).includes(normalized as TaskUrgency)) {
-      throw new BadRequestException(
-        `Invalid task priority: ${priority}. Valid values are: ${Object.values(TaskUrgency).join(', ')}`,
-      );
-    }
-
-    return normalized as TaskUrgency;
-  }
-
-  /**
-   * Validates and normalizes a project type string.
-   *
-   * @param type - The project type string to validate
-   * @returns Normalized ProjectType enum value, or undefined if no type provided
-   * @throws BadRequestException if the project type is invalid
-   */
-  private validateProjectType(type?: string): ProjectType | undefined {
-    if (!type) return undefined;
-
-    const normalized = type.toUpperCase();
-    if (!Object.values(ProjectType).includes(normalized as ProjectType)) {
-      throw new BadRequestException(
-        `Invalid project type: ${type}. Valid values are: ${Object.values(ProjectType).join(', ')}`,
-      );
-    }
-
-    return normalized as ProjectType;
-  }
-
-  /**
-   * Validates and normalizes a scrum task status string.
-   *
-   * @param status - The status string to validate
-   * @returns Normalized ScrumTaskStatus enum value, or undefined if no status provided
-   * @throws BadRequestException if the status is invalid
-   */
-  private validateScrumTaskStatus(
-    status?: string,
-  ): ScrumTaskStatus | undefined {
-    if (!status) return undefined;
-
-    const normalized = status.toUpperCase();
-    if (
-      !Object.values(ScrumTaskStatus).includes(normalized as ScrumTaskStatus)
-    ) {
-      throw new BadRequestException(
-        `Invalid task status: ${status}. Valid values are: ${Object.values(ScrumTaskStatus).join(', ')}`,
-      );
-    }
-
-    return normalized as ScrumTaskStatus;
-  }
 }

@@ -20,7 +20,7 @@ import {
   CanUpdate,
 } from 'src/casl/decorators/check-abilities.decorator';
 import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
-import TaskSummaryResponseDto from './dto/response.task-summary.dto';
+import { TaskSummaryResponseDto } from './dto/response.task-summary.dto';
 import { TaskSummaryQueryDto } from './dto/query-task-summary.dto';
 
 @ApiTags('Tasks')

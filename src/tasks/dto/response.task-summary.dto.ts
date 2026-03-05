@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export default class TaskSummaryResponseDto {
+export class TaskSummaryResponseDto {
   @ApiProperty({ type: Number })
   TODO: number;
 

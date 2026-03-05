@@ -37,7 +37,7 @@ export class ProjectsController {
     const projects = await this.projectsService.findAll(req.user, query);
     return {
       projects: projects.data,
-      meta: projects.meta,
+      metadata: projects.meta,
     };
   }
 

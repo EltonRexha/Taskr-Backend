@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { ProjectQueryDto } from './dto/query-projects.dto';
 import { User } from 'prisma/generated/prisma/client';
+import { CreateProjectDto } from './dto/create-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -51,6 +52,19 @@ export class ProjectsService {
       data: projects,
       meta: this.paginationService.getMeta(projectsCount, page, take),
     };
+  }
+
+  async create(user: User, createProjectDto: CreateProjectDto) {
+    const existingProject = await this.prisma.project.findUnique({
+      where: {
+        name: createProjectDto.name,
+      },
+    });
+
+    if (existingProject) {
+      throw new BadRequestException('Project with this name already exists');
+    }
+
   }
 
   findOne(id: number) {
