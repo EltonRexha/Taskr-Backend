@@ -9,4 +9,3 @@ export class TasksResponseDto {
   @ApiProperty({ type: ResponsePaginationDto })
   metadata!: ResponsePaginationDto;
 }
-

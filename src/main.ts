@@ -8,7 +8,25 @@ import { Request, Response } from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.use(bodyParser.json());
+
+  app.use(
+    '/webhooks/clerk',
+    bodyParser.json({
+      verify: (req: any, res, buf) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        req.rawBody = buf.toString();
+      },
+    }),
+  );
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: false,
+    }),
+  );
   app.enableCors();
 
   const config = new DocumentBuilder()
@@ -24,16 +42,6 @@ async function bootstrap() {
   app
     .getHttpAdapter()
     .get('/docs-json', (req: Request, res: Response) => res.json(document));
-
-  app.use(
-    '/webhooks/clerk',
-    bodyParser.json({
-      verify: (req: any, res, buf) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        req.rawBody = buf.toString();
-      },
-    }),
-  );
 
   await app.listen(process.env.PORT ?? 3000);
 }

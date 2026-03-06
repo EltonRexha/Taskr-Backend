@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -9,15 +8,26 @@ import {
   Req,
   Query,
   UseInterceptors,
+  Post,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import type { Request } from 'express';
 import { ProjectQueryDto } from './dto/query/query-projects.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ProjectsResponseDto } from './dto/response/projects-response.dto';
-import { CanList } from 'src/casl/decorators/check-abilities.decorator';
+import {
+  CanCreate,
+  CanList,
+} from 'src/casl/decorators/check-abilities.decorator';
 import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
 import type { User } from 'prisma/generated/prisma/client';
+import { ProjectResponseDto } from './dto/response';
+import { CreateProjectDto } from './dto/input/create-project.dto';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -25,6 +35,24 @@ import type { User } from 'prisma/generated/prisma/client';
 @UseInterceptors(CustomCacheInterceptor)
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
+
+  @Post()
+  @CanCreate('PROJECT')
+  @ApiCreatedResponse({ type: ProjectResponseDto })
+  async create(@Req() req: Request, @Body() body: CreateProjectDto) {
+    const project = await this.projectsService.create(req.user, body);
+    return {
+      id: project.id,
+      name: project.name,
+      projectType: project.projectType,
+      members: project.projectMembers.map((m) => ({
+        userClerkId: m.userClerkId,
+        role: m.role,
+      })),
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    };
+  }
 
   @Get()
   @CanList('PROJECT')

@@ -18,6 +18,11 @@ export class TaskQueryDto extends PaginationDto {
 
   @IsOptional()
   @IsString()
+  @ApiPropertyOptional({ description: 'Filter by task title' })
+  title?: string;
+
+  @IsOptional()
+  @IsString()
   @ApiPropertyOptional({ description: 'Filter by project name' })
   project_name?: string;
 
@@ -137,4 +142,3 @@ export class TaskQueryDto extends PaginationDto {
   })
   sort_by?: string[];
 }
-

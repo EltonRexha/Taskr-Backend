@@ -8,7 +8,7 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
 
     // Example: cache per user
-    const userId = request.user.clerkId;
+    const userId = request.user?.clerkId;
     return `${request.url}:${userId ?? 'public'}`;
   }
 }

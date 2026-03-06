@@ -107,6 +107,7 @@ export class TasksService {
         this.paginationService.getPagination(taskQueryDto);
       const {
         description,
+        title,
         project_name,
         label,
         priority,
@@ -128,6 +129,7 @@ export class TasksService {
           description: description
             ? { contains: description, mode: 'insensitive' }
             : undefined,
+          title: title ? { contains: title, mode: 'insensitive' } : undefined,
           label,
           priority,
           project: {

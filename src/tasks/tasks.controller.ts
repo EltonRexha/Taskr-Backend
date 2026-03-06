@@ -66,7 +66,7 @@ export class TasksController {
     return this.tasksService.findOne(+id);
   }
 
-  @CanUpdate('TASK', (req) => req.params.id)
+  @CanUpdate('TASK', (req) => req.params.id as string | undefined)
   @Patch(':id')
   update(@Param('id') id: string) {
     return this.tasksService.update(+id);
