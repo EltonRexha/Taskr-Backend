@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ProjectType } from 'prisma/generated/prisma/enums';
 
 export class ProjectDto {
   @ApiProperty()
@@ -7,8 +8,8 @@ export class ProjectDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
-  projectType: string;
+  @ApiProperty({ enum: ProjectType })
+  projectType: ProjectType;
 
   @ApiProperty()
   createdAt: string;

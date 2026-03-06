@@ -1,8 +1,14 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsDate, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from 'src/common/dto/pagination/pagination.dto';
 import { transformToUtcDate } from 'src/common/utils/transform-to-utc-date';
+import {
+  ProjectType,
+  ScrumTaskStatus,
+  TaskLabel,
+  TaskUrgency,
+} from 'prisma/generated/prisma/enums';
 
 export class TaskQueryDto extends PaginationDto {
   @IsOptional()
@@ -12,18 +18,33 @@ export class TaskQueryDto extends PaginationDto {
 
   @IsOptional()
   @IsString()
+  @ApiPropertyOptional({ description: 'Filter by task title' })
+  title?: string;
+
+  @IsOptional()
+  @IsString()
   @ApiPropertyOptional({ description: 'Filter by project name' })
   project_name?: string;
 
   @IsOptional()
-  @IsString()
+  @Transform(({ value }) =>
+    typeof value === 'string'
+      ? (value.toUpperCase() as TaskLabel)
+      : (value as TaskLabel),
+  )
+  @IsEnum(TaskLabel)
   @ApiPropertyOptional({ description: 'Filter by label' })
-  label?: string;
+  label?: TaskLabel;
 
   @IsOptional()
-  @IsString()
-  @ApiPropertyOptional({ description: 'Filter by priority (e.g., high, low)' })
-  priority?: string;
+  @Transform(({ value }) =>
+    typeof value === 'string'
+      ? (value.toUpperCase() as TaskUrgency)
+      : (value as TaskUrgency),
+  )
+  @IsEnum(TaskUrgency)
+  @ApiPropertyOptional({ description: 'Filter by priority (e.g., HIGH, LOW)' })
+  priority?: TaskUrgency;
 
   @IsOptional()
   @IsString()
@@ -31,17 +52,29 @@ export class TaskQueryDto extends PaginationDto {
   project_id?: string;
 
   @IsOptional()
-  @IsString()
-  @ApiPropertyOptional({ description: 'Filter by type of task' })
-  type?: string;
+  @Transform(({ value }) =>
+    typeof value === 'string'
+      ? (value.toUpperCase() as ProjectType)
+      : (value as ProjectType),
+  )
+  @IsEnum(ProjectType)
+  @ApiPropertyOptional({
+    description: 'Filter by project type (e.g., SCRUM, KANBAN)',
+  })
+  type?: ProjectType;
 
   @IsOptional()
-  @IsString()
+  @Transform(({ value }) =>
+    typeof value === 'string'
+      ? (value.toUpperCase() as ScrumTaskStatus)
+      : (value as ScrumTaskStatus),
+  )
+  @IsEnum(ScrumTaskStatus)
   @ApiPropertyOptional({
     description:
-      'Filter by status (for e.g in scrum, TODO, IN_PROGRESS, IN_REVIEW, DONE)',
+      'Filter by Scrum task status (TODO, IN_PROGRESS, IN_REVIEW, DONE)',
   })
-  status?: string;
+  status?: ScrumTaskStatus;
 
   @IsOptional()
   @Transform(transformToUtcDate)

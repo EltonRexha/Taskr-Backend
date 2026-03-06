@@ -110,8 +110,8 @@ export const CanView = (
  */
 export const fromParams =
   (paramName: string = 'id') =>
-  (req: Request) =>
-    req.params[paramName];
+  (req: Request): string | undefined =>
+    req.params[paramName] as string | undefined;
 
 export const fromBody =
   (fieldName: string) =>
@@ -127,8 +127,14 @@ export const fromBody =
     return undefined;
   };
 
-export const fromQuery = (queryName: string) => (req: Request) =>
-  req.query[queryName] as string;
+export const fromQuery =
+  (queryName: string) =>
+  (req: Request): string | undefined =>
+    (req.query[queryName] as string | string[] | undefined) instanceof Array
+      ? undefined
+      : (req.query[queryName] as string | undefined);
 
-export const fromHeader = (headerName: string) => (req: Request) =>
-  req.headers[headerName] as string;
+export const fromHeader =
+  (headerName: string) =>
+  (req: Request): string | undefined =>
+    req.headers[headerName] as string | undefined;
