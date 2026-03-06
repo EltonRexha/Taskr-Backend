@@ -11,4 +11,3 @@ export class TaskMetaDto {
   @ApiProperty({ enum: ProjectType })
   type!: ProjectType;
 }
-

@@ -38,4 +38,3 @@ export class TaskDto {
   @ApiProperty({ type: TaskProjectDto }) project!: TaskProjectDto;
   @ApiPropertyOptional({ type: TaskMetaDto }) metaData?: TaskMetaDto;
 }
-

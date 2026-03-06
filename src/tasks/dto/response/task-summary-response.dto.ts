@@ -19,4 +19,3 @@ export class TaskSummaryResponseDto {
   @ApiProperty({ type: Number })
   memberCount: number;
 }
-
