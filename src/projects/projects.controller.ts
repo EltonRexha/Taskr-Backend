@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   Post,
+  Inject,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import type { Request } from 'express';
@@ -28,18 +29,23 @@ import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.int
 import type { User } from 'prisma/generated/prisma/client';
 import { ProjectResponseDto } from './dto/response';
 import { CreateProjectDto } from './dto/input/create-project.dto';
+import { RedisCacheService } from 'src/redis/redis.service';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
 @Controller('projects')
 @UseInterceptors(CustomCacheInterceptor)
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly Redis: RedisCacheService,
+  ) {}
 
   @Post()
   @CanCreate('PROJECT')
   @ApiCreatedResponse({ type: ProjectResponseDto })
   async create(@Req() req: Request, @Body() body: CreateProjectDto) {
+    await this.Redis.del(`keyv::keyv:GET/projects:${req.user.clerkId}`);
     const project = await this.projectsService.create(req.user, body);
     return {
       id: project.id,

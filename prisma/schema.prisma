@@ -123,7 +123,7 @@ model ScrumEpic {
 
 model Project {
   id             String          @id @default(uuid())
-  name           String          @unique
+  name           String
   scrumProject   ScrumProject    @relation(fields: [scrumProjectId], references: [id])
   scrumProjectId String          @unique @map("scrum_project_id")
   projectType    ProjectType     @map("project_type")
@@ -135,6 +135,7 @@ model Project {
   projectMembers ProjectMember[]
   tasks          Task[]
 
+  @@unique([name, userClerkId])
   @@map("projects")
 }
 

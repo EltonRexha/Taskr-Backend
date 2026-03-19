@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { PaginatedService } from 'src/common/services/pagination.service';
 import { ProjectQueryDto } from './dto/query/query-projects.dto';
-import { User } from 'prisma/generated/prisma/client';
+import { Prisma, User } from 'prisma/generated/prisma/client';
 import { CreateProjectDto } from './dto/input/create-project.dto';
 import { ProjectMemberRole } from 'prisma/generated/prisma/enums';
 
@@ -19,27 +19,29 @@ export class ProjectsService {
 
     const { project_name, project_name_like } = projectQueryDto;
 
-    const projects = await this.databaseService.project.findMany({
-      where: {
-        projectMembers: {
-          some: {
-            userClerkId: user.clerkId,
-          },
+    const whereClause: Prisma.ProjectWhereInput = {
+      projectMembers: {
+        some: {
+          userClerkId: user.clerkId,
         },
-        ...(project_name
-          ? {
-              name: {
-                equals: project_name,
-                mode: 'insensitive',
-              },
-            }
-          : project_name_like && {
-              name: {
-                contains: project_name_like,
-                mode: 'insensitive',
-              },
-            }),
       },
+      ...(project_name
+        ? {
+            name: {
+              equals: project_name,
+              mode: 'insensitive',
+            },
+          }
+        : project_name_like && {
+            name: {
+              contains: project_name_like,
+              mode: 'insensitive',
+            },
+          }),
+    };
+
+    const projects = await this.databaseService.project.findMany({
+      where: whereClause,
       select: {
         id: true,
         name: true,
@@ -50,7 +52,9 @@ export class ProjectsService {
       skip,
       take,
     });
-    const projectsCount = await this.databaseService.project.count();
+    const projectsCount = await this.databaseService.project.count({
+      where: whereClause,
+    });
 
     return {
       data: projects,
