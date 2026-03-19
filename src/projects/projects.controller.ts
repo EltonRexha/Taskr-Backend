@@ -9,7 +9,6 @@ import {
   Query,
   UseInterceptors,
   Post,
-  Inject,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import type { Request } from 'express';
