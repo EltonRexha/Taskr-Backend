@@ -63,7 +63,7 @@ export class ProjectsService {
   }
 
   async create(user: User, createProjectDto: CreateProjectDto) {
-    const existingProject = await this.databaseService.project.findUnique({
+    const existingProject = await this.databaseService.project.findFirst({
       where: {
         name: createProjectDto.name,
       },
@@ -86,7 +86,7 @@ export class ProjectsService {
     createProjectDto: CreateProjectDto,
   ) {
     // ensure name uniqueness before opening transaction
-    const existing = await this.databaseService.project.findUnique({
+    const existing = await this.databaseService.project.findFirst({
       where: { name: createProjectDto.name },
     });
     if (existing) {
