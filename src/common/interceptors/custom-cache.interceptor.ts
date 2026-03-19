@@ -9,6 +9,6 @@ export class CustomCacheInterceptor extends CacheInterceptor {
 
     // Example: cache per user
     const userId = request.user?.clerkId;
-    return `${request.url}:${userId ?? 'public'}`;
+    return `${request.method}${request.url}:${userId ?? 'public'}`;
   }
 }
