@@ -154,8 +154,19 @@ export class ProjectsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(id: string) {
+    return await this.databaseService.project.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        name: true,
+        projectType: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
   }
 
   update(id: number) {
