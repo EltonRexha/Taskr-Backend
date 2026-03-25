@@ -4,8 +4,8 @@ import { ResponsePaginationDto } from 'src/common/dto/pagination/pagination-resp
 
 export class ProjectsResponseDto {
   @ApiProperty({ type: [ProjectDto] })
-  projects: ProjectDto[];
+  projects!: ProjectDto[];
 
   @ApiProperty({ type: ResponsePaginationDto })
-  metadata: ResponsePaginationDto;
+  metadata!: ResponsePaginationDto;
 }

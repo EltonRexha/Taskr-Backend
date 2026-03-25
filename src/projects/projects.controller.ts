@@ -23,6 +23,7 @@ import { ProjectsResponseDto } from './dto/response/projects-response.dto';
 import {
   CanCreate,
   CanList,
+  CanView,
 } from 'src/casl/decorators/check-abilities.decorator';
 import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
 import type { User } from 'prisma/generated/prisma/client';
@@ -74,8 +75,12 @@ export class ProjectsController {
   }
 
   @Get(':id')
+  @CanView('PROJECT', (req) =>
+    Array.isArray(req.params['id']) ? req.params['id'][0] : req.params['id'],
+  )
+  @ApiOkResponse({ type: ProjectResponseDto })
   findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(+id);
+    return this.projectsService.findOne(id);
   }
 
   @Patch(':id')
