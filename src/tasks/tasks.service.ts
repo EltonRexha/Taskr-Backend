@@ -9,6 +9,7 @@ import { DatabaseService } from 'src/database/database.service';
 import {
   ScrumTaskStatus,
   ProjectType,
+  SprintStatus,
 } from '../../prisma/generated/prisma/enums';
 import { Prisma, User } from '../../prisma/generated/prisma/client';
 import { PaginatedService } from 'src/common/services/pagination.service';
@@ -21,9 +22,6 @@ type SortOrder = 'asc' | 'desc';
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
 
-  /**
-   * Fields that can be used for sorting
-   */
   private readonly sortByFields = [
     'created_at',
     'updated_at',
@@ -33,20 +31,6 @@ export class TasksService {
     'type',
   ] as const;
 
-  /**
-   * Standard select configuration for task metadata.
-   * Includes all task type metadata (Scrum, Kanban, etc.)
-   *
-   * @future When adding Kanban support, add:
-   * ```typescript
-   * kanbanTask: {
-   *   select: {
-   *     id: true,
-   *     status: true,
-   *   },
-   * }
-   * ```
-   */
   private readonly TASK_METADATA_SELECT = {
     scrumTask: {
       select: {
@@ -54,13 +38,8 @@ export class TasksService {
         status: true,
       },
     },
-    // Future: Add kanbanTask here
   } as const;
 
-  /**
-   * Standard select configuration for tasks with all necessary fields.
-   * Use this across all queries to maintain consistency.
-   */
   private readonly TASK_SELECT = {
     id: true,
     description: true,
@@ -105,6 +84,7 @@ export class TasksService {
     try {
       const { skip, take, page } =
         this.paginationService.getPagination(taskQueryDto);
+
       const {
         description,
         title,
@@ -120,10 +100,11 @@ export class TasksService {
         status,
         type,
         sort_by,
+        active,
       } = taskQueryDto;
+
       const sortByField = this.validateSortBy(sort_by);
 
-      // Build reusable where clause
       const whereClause: Prisma.TaskWhereInput = {
         AND: {
           description: description
@@ -156,11 +137,11 @@ export class TasksService {
             : due_date_lte
               ? { lte: due_date_lte }
               : undefined,
-          ...this.buildStatusFilter(status),
+
+          scrumTask: this.buildScrumTaskFilter(status, active),
         },
       };
 
-      // Fetch tasks and count in parallel for better performance
       const [tasks, tasksCount] = await Promise.all([
         this.databaseService.task.findMany({
           where: whereClause,
@@ -184,13 +165,41 @@ export class TasksService {
     } catch (error) {
       this.logger.error('Failed to fetch tasks', error);
 
-      // Re-throw validation errors
       if (error instanceof BadRequestException) {
         throw error;
       }
 
       throw new InternalServerErrorException('Failed to fetch tasks');
     }
+  }
+
+  private buildScrumTaskFilter(
+    status?: ScrumTaskStatus,
+    active?: boolean,
+  ): Prisma.TaskWhereInput['scrumTask'] | undefined {
+    if (!status && !active) return undefined;
+
+    const now = new Date();
+
+    const isFilter: Prisma.ScrumTaskWhereInput = {};
+
+    if (status) {
+      isFilter.status = status;
+    }
+
+    if (active) {
+      isFilter.sprint = {
+        is: {
+          startDate: { lte: now },
+          sprintStatus: SprintStatus.DUE,
+        },
+      };
+    }
+
+    return {
+      isNot: null,
+      is: isFilter,
+    };
   }
 
   async getTasksSummary(user: User, projectId: string) {
@@ -248,14 +257,18 @@ export class TasksService {
     );
 
     let overdueTasks = 0;
+
     for (const task of tasks) {
       const status = task.scrumTask?.status;
       if (!status) continue;
+
       const isOverdue = task.dueDate < now && status !== ScrumTaskStatus.DONE;
+
       if (isOverdue) {
         overdueTasks += 1;
         continue;
       }
+
       baseSummary[status] += 1;
     }
 
@@ -278,54 +291,8 @@ export class TasksService {
     return `This action removes a #${id} task`;
   }
 
-  /**
-   * Builds the where clause for filtering tasks by status.
-   * Handles different task types (Scrum, Kanban, etc.)
-   *
-   * @param status - The validated status to filter by
-   * @returns Prisma where clause for task status filtering, or undefined if no status
-   *
-   * @future When adding Kanban support, update to:
-   * ```typescript
-   * return {
-   *   OR: [
-   *     { scrumTask: { status: scrumStatus } },
-   *     { kanbanTask: { status: kanbanStatus } },
-   *   ],
-   * };
-   * ```
-   */
-  private buildStatusFilter(status?: ScrumTaskStatus) {
-    if (!status) return undefined;
-
-    return {
-      scrumTask: {
-        status: status,
-      },
-    };
-
-    // Future: When Kanban is added, replace with OR condition
-  }
-
-  /**
-   * Transforms a task's relation data into a unified metadata structure.
-   *
-   * Currently handles Scrum task metadata. When the task has a scrumTask relation,
-   * it extracts the metadata and adds a type identifier.
-   *
-   * @param task - The task object with potential scrumTask or kanbanTask relations
-   * @returns Metadata object with id, status, and type, or null if no metadata exists
-   *
-   * @future To add Kanban support, extend the function:
-   * ```typescript
-   * if (task.kanbanTask) {
-   *   return { ...task.kanbanTask, type: 'KANBAN' as const };
-   * }
-   * ```
-   */
   private getTaskMetadata(task: {
     scrumTask?: { id: string; status: ScrumTaskStatus } | null;
-    // Future: kanbanTask?: { id: string; status: KanbanTaskStatus } | null;
   }) {
     if (task.scrumTask) {
       return {
@@ -334,18 +301,9 @@ export class TasksService {
       };
     }
 
-    // Future: Check kanbanTask here
-
     return null;
   }
 
-  /**
-   * Validates and normalizes sort by fields with order.
-   *
-   * @param sortByItems - Array like ['priority:desc', 'dueDate:asc']
-   * @returns Prisma-compatible orderBy array or undefined
-   * @throws BadRequestException if field or order is invalid
-   */
   private validateSortBy(sortByItems?: string[]):
     | Array<{
         [key in (typeof this.sortByFields)[number]]?: SortOrder;
@@ -383,9 +341,4 @@ export class TasksService {
       };
     });
   }
-
-  /**
-   * Enum string validation for label, priority, project type, and status
-   * is now handled at the DTO level using class-validator and transformers.
-   */
 }

@@ -1,5 +1,12 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination/pagination.dto';
 import { transformToUtcDate } from 'src/common/utils/transform-to-utc-date';
@@ -11,6 +18,16 @@ import {
 } from 'prisma/generated/prisma/enums';
 
 export class TaskQueryDto extends PaginationDto {
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') return value.toLowerCase() === 'true';
+    return undefined;
+  })
+  @ApiPropertyOptional({ description: 'Filter by tasks in active sprints' })
+  active?: boolean;
+
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ description: 'Filter by task description' })
