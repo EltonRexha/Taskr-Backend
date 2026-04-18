@@ -21,7 +21,7 @@ export class WebhooksController {
   @Public()
   async handleClerk(@Req() req: Request) {
     try {
-      this.logger.error('Received Clerk webhook', {
+      this.logger.log('Received Clerk webhook', {
         headers: req.headers,
       });
       const fetchReq = expressToFetchRequest(req);
