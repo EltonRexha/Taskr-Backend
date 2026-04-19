@@ -9,9 +9,12 @@ import {
   Query,
   UseInterceptors,
   Post,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
+import { DatabaseService } from 'src/database/database.service';
 import type { Request } from 'express';
+import { SprintStatus } from '../../prisma/generated/prisma/enums';
 import { ProjectQueryDto } from './dto/query/query-projects.dto';
 import {
   ApiBearerAuth,
@@ -27,7 +30,7 @@ import {
 } from 'src/casl/decorators/check-abilities.decorator';
 import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
 import type { User } from 'prisma/generated/prisma/client';
-import { ProjectResponseDto } from './dto/response';
+import { ProjectResponseDto, SprintsResponseDto } from './dto/response';
 import { CreateProjectDto } from './dto/input/create-project.dto';
 import { RedisCacheService } from 'src/redis/redis.service';
 
@@ -38,6 +41,7 @@ import { RedisCacheService } from 'src/redis/redis.service';
 export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
+    private readonly databaseService: DatabaseService,
     private readonly Redis: RedisCacheService,
   ) {}
 
@@ -45,7 +49,7 @@ export class ProjectsController {
   @CanCreate('PROJECT')
   @ApiCreatedResponse({ type: ProjectResponseDto })
   async create(@Req() req: Request, @Body() body: CreateProjectDto) {
-    await this.Redis.del(`keyv::keyv:GET/projects:${req.user.clerkId}`);
+    await this.Redis.deleteByPattern(`*GET/projects*:${req.user.clerkId}`);
     const project = await this.projectsService.create(req.user, body);
     return {
       id: project.id,
@@ -91,5 +95,42 @@ export class ProjectsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectsService.remove(+id);
+  }
+
+  @Get(':id/sprints')
+  @CanView('PROJECT', (req) =>
+    Array.isArray(req.params['id']) ? req.params['id'][0] : req.params['id'],
+  )
+  @ApiOkResponse({ type: SprintsResponseDto })
+  async getActiveSprints(@Param('id') id: string) {
+    const project = await this.databaseService.project.findUnique({
+      where: { id },
+      include: { scrumProject: true },
+    });
+
+    if (!project) {
+      throw new BadRequestException('Project not found');
+    }
+
+    if (!project.scrumProject) {
+      return { sprints: [] };
+    }
+
+    const sprints = await this.databaseService.sprint.findMany({
+      where: {
+        scrumProjectId: project.scrumProject.id,
+        sprintStatus: SprintStatus.DUE,
+      },
+    });
+
+    return {
+      sprints: sprints.map((sprint) => ({
+        id: sprint.id,
+        title: sprint.title,
+        startDate: sprint.startDate.toISOString(),
+        dueDate: sprint.dueDate.toISOString(),
+        sprintStatus: sprint.sprintStatus,
+      })),
+    };
   }
 }

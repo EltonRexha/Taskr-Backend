@@ -31,4 +31,25 @@ export class RedisCacheService {
     const result = await this.redis.exists(key);
     return result === 1;
   }
+
+  async deleteByPattern(pattern: string): Promise<number> {
+    let cursor = '0';
+    let deletedCount = 0;
+
+    do {
+      const result = await this.redis.scan(cursor, {
+        MATCH: pattern,
+        COUNT: 100,
+      });
+      cursor = result.cursor.toString();
+      const keys = result.keys;
+
+      if (keys.length > 0) {
+        await this.redis.del(keys);
+        deletedCount += keys.length;
+      }
+    } while (cursor !== '0');
+
+    return deletedCount;
+  }
 }

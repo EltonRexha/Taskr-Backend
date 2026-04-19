@@ -16,24 +16,35 @@ import type { Request } from 'express';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { TasksResponseDto } from './dto/response/tasks-response.dto';
 import type { User } from 'prisma/generated/prisma/client';
-import {
-  CanList,
-  CanUpdate,
-} from 'src/casl/decorators/check-abilities.decorator';
+import { CanList } from 'src/casl/decorators/check-abilities.decorator';
 import { CustomCacheInterceptor } from 'src/common/interceptors/custom-cache.interceptor';
 import { TaskSummaryResponseDto } from './dto/response/task-summary-response.dto';
 import { TaskSummaryQueryDto } from './dto/query/task-summary-query.dto';
+import { CreateTaskDto } from './dto/input/create-task.dto';
+import { TaskDto } from './dto/model/task.dto';
+import { RedisCacheService } from 'src/redis/redis.service';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
 @UseInterceptors(CustomCacheInterceptor)
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    private readonly Redis: RedisCacheService,
+  ) {}
 
   @Post()
-  create() {
-    return this.tasksService.create();
+  @ApiBearerAuth()
+  @CanList('TASK')
+  @ApiOkResponse({ type: TaskDto })
+  async create(
+    @Req() req: Request & { user: User },
+    @Body() body: CreateTaskDto,
+  ) {
+    await this.Redis.deleteByPattern(`*GET/tasks*:${req.user.clerkId}`);
+    const task = await this.tasksService.create(req.user, body);
+    return task;
   }
 
   @Get()
@@ -66,7 +77,6 @@ export class TasksController {
     return this.tasksService.findOne(+id);
   }
 
-  @CanUpdate('TASK', (req) => req.params.id as string | undefined)
   @Patch(':id')
   update(@Param('id') id: string) {
     return this.tasksService.update(+id);

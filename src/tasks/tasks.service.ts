@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { TaskQueryDto } from './dto/query/query-tasks.dto';
+import { CreateTaskDto } from './dto/input/create-task.dto';
 import { DatabaseService } from 'src/database/database.service';
 import {
   ScrumTaskStatus,
@@ -76,8 +77,110 @@ export class TasksService {
     private readonly databaseService: DatabaseService,
   ) {}
 
-  create() {
-    return 'This action adds a new task';
+  async create(user: User, createTaskDto: CreateTaskDto) {
+    const {
+      title,
+      description,
+      label,
+      priority,
+      projectId,
+      startDate,
+      dueDate,
+      status = ScrumTaskStatus.TODO,
+      assignedTo,
+      sprintId,
+    } = createTaskDto;
+
+    // Verify user is a project member
+    const projectMember = await this.databaseService.projectMember.findFirst({
+      where: {
+        projectId,
+        userClerkId: user.clerkId,
+      },
+    });
+
+    if (!projectMember) {
+      throw new BadRequestException('You are not a member of this project');
+    }
+
+    // Get the project's scrum project info
+    const project = await this.databaseService.project.findUnique({
+      where: { id: projectId },
+      include: { scrumProject: { include: { backlog: true } } },
+    });
+
+    if (!project) {
+      throw new BadRequestException('Project not found');
+    }
+
+    // Verify sprint exists for Scrum projects
+    if (project.projectType === ProjectType.SCRUM) {
+      if (!sprintId) {
+        throw new BadRequestException('Sprint ID is required for Scrum projects');
+      }
+      const sprint = await this.databaseService.sprint.findFirst({
+        where: {
+          id: sprintId,
+          scrumProjectId: project.scrumProject?.id,
+        },
+      });
+      if (!sprint) {
+        throw new BadRequestException('Sprint not found or does not belong to this project');
+      }
+    }
+
+    // Check if assigned users are project members
+    let assigneeConnections: { id: string }[] = [];
+    if (assignedTo && assignedTo.length > 0) {
+      const validMembers = await this.databaseService.projectMember.findMany({
+        where: {
+          projectId,
+          userClerkId: { in: assignedTo },
+        },
+      });
+
+      if (validMembers.length !== assignedTo.length) {
+        throw new BadRequestException(
+          'Some assigned users are not project members',
+        );
+      }
+
+      assigneeConnections = validMembers.map((m) => ({ id: m.id }));
+    }
+
+    // Create the task with scrumTask metadata
+    const task = await this.databaseService.task.create({
+      data: {
+        title,
+        description,
+        label,
+        priority,
+        projectId,
+        userClerkId: user.clerkId,
+        startDate: new Date(startDate),
+        dueDate: new Date(dueDate),
+        assignedTo:
+          assigneeConnections.length > 0
+            ? { connect: assigneeConnections }
+            : undefined,
+        scrumTask:
+          project.projectType === ProjectType.SCRUM
+            ? {
+                create: {
+                  status,
+                  backlogId: project.scrumProject?.backlog?.id,
+                  sprintId,
+                },
+              }
+            : undefined,
+      },
+      select: this.TASK_SELECT,
+    });
+
+    return {
+      ...task,
+      metaData: this.getTaskMetadata(task),
+    };
   }
 
   async findAll(user: User, taskQueryDto: TaskQueryDto) {
